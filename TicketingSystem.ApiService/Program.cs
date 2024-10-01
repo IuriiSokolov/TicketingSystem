@@ -1,7 +1,6 @@
 using TicketingSystem.Common;
 
 var builder = WebApplication.CreateBuilder(args);
-//builder.AddNpgsqlDataSource("TicketingDB");
 builder.AddNpgsqlDbContext<TicketingDbContext>("TicketingDB");
 
 // Add service defaults & Aspire components.

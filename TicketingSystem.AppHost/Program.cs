@@ -10,6 +10,9 @@ var postgresdb = postgresql.AddDatabase("TicketingDB");
 var apiService = builder.AddProject<Projects.TicketingSystem_ApiService>("apiservice")
     .WithReference(postgresdb);
 
+builder.AddProject<Projects.TicketingSystem_MigrationService>("migration")
+       .WithReference(postgresdb);
+
 builder.AddProject<Projects.TicketingSystem_Web>("webfrontend")
     .WithExternalHttpEndpoints()
     .WithReference(cache)
