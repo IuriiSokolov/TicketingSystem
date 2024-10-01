@@ -26,6 +26,4 @@ builder.Services.AddDbContextPool<TicketingDbContext>(options =>
 
 var app = builder.Build();
 
-app.MapDefaultEndpoints();
-
 app.Run();
