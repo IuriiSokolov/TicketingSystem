@@ -5,8 +5,7 @@ namespace TicketingSystem.Common
 {
     public class TicketingDbContext : DbContext
     {
-        public TicketingDbContext(DbContextOptions<TicketingDbContext> options)
-            : base(options)
+        public TicketingDbContext()
         {
         }
 
@@ -14,5 +13,10 @@ namespace TicketingSystem.Common
         public DbSet<Seat> Seats { get; set; }
         public DbSet<Person> Persons { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseNpgsql();
+        }
     }
 }
