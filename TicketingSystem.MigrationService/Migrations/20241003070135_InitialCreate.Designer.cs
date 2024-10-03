@@ -12,8 +12,8 @@ using TicketingSystem.Common;
 namespace TicketingSystem.MigrationService.Migrations
 {
     [DbContext(typeof(TicketingDbContext))]
-    [Migration("20241001111349_BaseMigration")]
-    partial class BaseMigration
+    [Migration("20241003070135_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

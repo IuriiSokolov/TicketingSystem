@@ -1,7 +1,15 @@
+using MongoDB.Driver;
 using TicketingSystem.Common;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.AddNpgsqlDbContext<TicketingDbContext>("TicketingDB");
+
+builder.AddMongoDBClient("TicketingDB");
+
+builder.Services.AddScoped(svc =>
+{
+    var scope = svc.CreateScope();
+    return TicketingDbContext.Create(scope.ServiceProvider.GetRequiredService<IMongoDatabase>());
+});
 
 // Add service defaults & Aspire components.
 builder.AddServiceDefaults();
