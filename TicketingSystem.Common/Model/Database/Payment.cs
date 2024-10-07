@@ -5,6 +5,6 @@
         public int PaymentId { get; set; }
         public required DateTime PaymentTime { get; set; }
 
-        public Ticket Ticket { get; set; } = null!;
+        public Cart? Cart { get; set; }
     }
 }
