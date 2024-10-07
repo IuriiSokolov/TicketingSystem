@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TicketingSystem.ApiService\TicketingSystem.ApiService.csproj" />
+    <ProjectReference Include="..\TicketingSystem.MigrationService\TicketingSystem.MigrationService.csproj" />
     <ProjectReference Include="..\TicketingSystem.Web\TicketingSystem.Web.csproj" />
   </ItemGroup>
 
