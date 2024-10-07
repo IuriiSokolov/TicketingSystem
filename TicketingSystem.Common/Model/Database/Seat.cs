@@ -10,5 +10,7 @@ namespace TicketingSystem.Common.Model.Database
 
         public required int EventId { get; set; }
         public Event? Event { get; set; }
+
+        public Ticket Ticket { get; set; } = null!;
     }
 }

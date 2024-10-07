@@ -10,7 +10,7 @@ namespace TicketingSystem.Common.Context
 {
     public interface ITicketingDbContext
     {
-        DbSet<Place> Places { get; set; }
+        DbSet<Venue> Venues { get; set; }
         DbSet<Event> Events { get; set; }
         DbSet<Seat> Seats { get; set; }
         DbSet<Person> Persons { get; set; }
