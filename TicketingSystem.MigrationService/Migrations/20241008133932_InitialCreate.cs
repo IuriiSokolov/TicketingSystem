@@ -224,7 +224,7 @@ namespace TicketingSystem.MigrationService.Migrations
                     PriceCategoryId = table.Column<int>(type: "integer", nullable: false),
                     EventId = table.Column<int>(type: "integer", nullable: false),
                     SeatId = table.Column<int>(type: "integer", nullable: false),
-                    PersonId = table.Column<int>(type: "integer", nullable: false)
+                    PersonId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -239,8 +239,7 @@ namespace TicketingSystem.MigrationService.Migrations
                         name: "FK_Tickets_Persons_PersonId",
                         column: x => x.PersonId,
                         principalTable: "Persons",
-                        principalColumn: "PersonId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "PersonId");
                     table.ForeignKey(
                         name: "FK_Tickets_PriceCategories_PriceCategoryId",
                         column: x => x.PriceCategoryId,

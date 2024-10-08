@@ -12,7 +12,7 @@ using TicketingSystem.Common.Context;
 namespace TicketingSystem.MigrationService.Migrations
 {
     [DbContext(typeof(TicketingDbContext))]
-    [Migration("20241008133439_InitialCreate")]
+    [Migration("20241008133932_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -391,7 +391,7 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.Property<int>("EventId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("PersonId")
+                    b.Property<int?>("PersonId")
                         .HasColumnType("integer");
 
                     b.Property<int>("PriceCategoryId")
@@ -570,9 +570,7 @@ namespace TicketingSystem.MigrationService.Migrations
 
                     b.HasOne("TicketingSystem.Common.Model.Database.Entities.Person", "Person")
                         .WithMany("Tickets")
-                        .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PersonId");
 
                     b.HasOne("TicketingSystem.Common.Model.Database.Entities.PriceCategory", "PriceCategory")
                         .WithMany()

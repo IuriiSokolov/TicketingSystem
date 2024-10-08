@@ -13,7 +13,7 @@
         public required int SeatId { get; set; }
         public Seat? Seat { get; set; }
 
-        public required int PersonId { get; set; }
+        public int? PersonId { get; set; }
         public Person? Person { get; set; }
 
         public ICollection<Cart> Carts { get; set; } = [];
