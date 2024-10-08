@@ -12,8 +12,8 @@ using TicketingSystem.Common.Context;
 namespace TicketingSystem.MigrationService.Migrations
 {
     [DbContext(typeof(TicketingDbContext))]
-    [Migration("20241007143528_IntitalCreate")]
-    partial class IntitalCreate
+    [Migration("20241008133439_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,7 +40,7 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.ToTable("CartTicket");
                 });
 
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Cart", b =>
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Cart", b =>
                 {
                     b.Property<int>("CartId")
                         .ValueGeneratedOnAdd()
@@ -70,19 +70,16 @@ namespace TicketingSystem.MigrationService.Migrations
                         new
                         {
                             CartId = 1,
-                            CartStatus = 2,
+                            CartStatus = 1,
                             PaymentId = 1,
                             PersonId = 1
                         });
                 });
 
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.CartStatusRow", b =>
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.CartStatusRow", b =>
                 {
                     b.Property<int>("CartStatusId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CartStatusId"));
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -95,17 +92,17 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasData(
                         new
                         {
-                            CartStatusId = 1,
+                            CartStatusId = 0,
                             Status = "NotPayed"
                         },
                         new
                         {
-                            CartStatusId = 2,
+                            CartStatusId = 1,
                             Status = "Payed"
                         });
                 });
 
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.CartTicket", b =>
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.CartTicket", b =>
                 {
                     b.Property<int>("CartId")
                         .HasColumnType("integer");
@@ -127,7 +124,7 @@ namespace TicketingSystem.MigrationService.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Event", b =>
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Event", b =>
                 {
                     b.Property<int>("EventId")
                         .ValueGeneratedOnAdd()
@@ -164,7 +161,7 @@ namespace TicketingSystem.MigrationService.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Payment", b =>
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Payment", b =>
                 {
                     b.Property<int>("PaymentId")
                         .ValueGeneratedOnAdd()
@@ -187,7 +184,7 @@ namespace TicketingSystem.MigrationService.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Person", b =>
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Person", b =>
                 {
                     b.Property<int>("PersonId")
                         .ValueGeneratedOnAdd()
@@ -216,16 +213,64 @@ namespace TicketingSystem.MigrationService.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Seat", b =>
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.PriceCategory", b =>
                 {
-                    b.Property<int>("SeatId")
+                    b.Property<int>("PriceCategoryId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    b.Property<string>("Code")
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PriceCategoryId"));
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PriceCategoryDescription")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PriceCategoryName")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<float>("PriceUsd")
+                        .HasColumnType("real");
+
+                    b.HasKey("PriceCategoryId");
+
+                    b.HasIndex("EventId");
+
+                    b.ToTable("PriceCategories");
+
+                    b.HasData(
+                        new
+                        {
+                            PriceCategoryId = 1,
+                            EventId = 1,
+                            PriceCategoryName = "Normal seat",
+                            PriceUsd = 10f
+                        });
+                });
+
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Seat", b =>
+                {
+                    b.Property<int>("SeatId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SeatId"));
+
                     b.Property<int>("EventId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("PriceCategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("RowNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SeatType")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("SectionId")
                         .HasColumnType("integer");
 
                     b.Property<int>("Status")
@@ -235,25 +280,28 @@ namespace TicketingSystem.MigrationService.Migrations
 
                     b.HasIndex("EventId");
 
+                    b.HasIndex("PriceCategoryId");
+
+                    b.HasIndex("SectionId");
+
                     b.ToTable("Seats");
 
                     b.HasData(
                         new
                         {
                             SeatId = 1,
-                            Code = "1",
                             EventId = 1,
-                            Status = 3
+                            RowNumber = 1,
+                            SeatType = 0,
+                            SectionId = 1,
+                            Status = 2
                         });
                 });
 
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.SeatStatusRow", b =>
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.SeatStatusRow", b =>
                 {
                     b.Property<int>("SeatStatusId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SeatStatusId"));
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -266,22 +314,73 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasData(
                         new
                         {
-                            SeatStatusId = 1,
+                            SeatStatusId = 0,
                             Status = "Free"
                         },
                         new
                         {
-                            SeatStatusId = 2,
+                            SeatStatusId = 1,
                             Status = "Booked"
                         },
                         new
                         {
-                            SeatStatusId = 3,
+                            SeatStatusId = 2,
                             Status = "Purchased"
                         });
                 });
 
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Ticket", b =>
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.SeatTypeRow", b =>
+                {
+                    b.Property<int>("SeatTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SeatType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("SeatTypeId");
+
+                    b.ToTable("SeatTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            SeatTypeId = 0,
+                            SeatType = "DesignatedSeat"
+                        },
+                        new
+                        {
+                            SeatTypeId = 1,
+                            SeatType = "GeneralAdmission"
+                        });
+                });
+
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Section", b =>
+                {
+                    b.Property<int>("SectionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SectionId"));
+
+                    b.Property<int>("VenueId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("SectionId");
+
+                    b.HasIndex("VenueId");
+
+                    b.ToTable("Sections");
+
+                    b.HasData(
+                        new
+                        {
+                            SectionId = 1,
+                            VenueId = 1
+                        });
+                });
+
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Ticket", b =>
                 {
                     b.Property<int>("TicketId")
                         .ValueGeneratedOnAdd()
@@ -289,15 +388,27 @@ namespace TicketingSystem.MigrationService.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TicketId"));
 
+                    b.Property<int>("EventId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("PersonId")
                         .HasColumnType("integer");
 
-                    b.Property<float>("PriceUsd")
-                        .HasColumnType("real");
+                    b.Property<int>("PriceCategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SeatId")
+                        .HasColumnType("integer");
 
                     b.HasKey("TicketId");
 
+                    b.HasIndex("EventId");
+
                     b.HasIndex("PersonId");
+
+                    b.HasIndex("PriceCategoryId");
+
+                    b.HasIndex("SeatId");
 
                     b.ToTable("Tickets");
 
@@ -305,12 +416,14 @@ namespace TicketingSystem.MigrationService.Migrations
                         new
                         {
                             TicketId = 1,
+                            EventId = 1,
                             PersonId = 1,
-                            PriceUsd = 10f
+                            PriceCategoryId = 1,
+                            SeatId = 1
                         });
                 });
 
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Venue", b =>
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Venue", b =>
                 {
                     b.Property<int>("VenueId")
                         .ValueGeneratedOnAdd()
@@ -344,26 +457,26 @@ namespace TicketingSystem.MigrationService.Migrations
 
             modelBuilder.Entity("CartTicket", b =>
                 {
-                    b.HasOne("TicketingSystem.Common.Model.Database.Cart", null)
+                    b.HasOne("TicketingSystem.Common.Model.Database.Entities.Cart", null)
                         .WithMany()
                         .HasForeignKey("CartsCartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TicketingSystem.Common.Model.Database.Ticket", null)
+                    b.HasOne("TicketingSystem.Common.Model.Database.Entities.Ticket", null)
                         .WithMany()
                         .HasForeignKey("TicketsTicketId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Cart", b =>
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Cart", b =>
                 {
-                    b.HasOne("TicketingSystem.Common.Model.Database.Payment", "Payment")
+                    b.HasOne("TicketingSystem.Common.Model.Database.Entities.Payment", "Payment")
                         .WithOne("Cart")
-                        .HasForeignKey("TicketingSystem.Common.Model.Database.Cart", "PaymentId");
+                        .HasForeignKey("TicketingSystem.Common.Model.Database.Entities.Cart", "PaymentId");
 
-                    b.HasOne("TicketingSystem.Common.Model.Database.Person", "Person")
+                    b.HasOne("TicketingSystem.Common.Model.Database.Entities.Person", "Person")
                         .WithMany()
                         .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -374,15 +487,15 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.Navigation("Person");
                 });
 
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.CartTicket", b =>
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.CartTicket", b =>
                 {
-                    b.HasOne("TicketingSystem.Common.Model.Database.Cart", "Cart")
+                    b.HasOne("TicketingSystem.Common.Model.Database.Entities.Cart", "Cart")
                         .WithMany()
                         .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TicketingSystem.Common.Model.Database.Ticket", "Ticket")
+                    b.HasOne("TicketingSystem.Common.Model.Database.Entities.Ticket", "Ticket")
                         .WithMany()
                         .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -393,9 +506,9 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.Navigation("Ticket");
                 });
 
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Event", b =>
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Event", b =>
                 {
-                    b.HasOne("TicketingSystem.Common.Model.Database.Venue", "Venue")
+                    b.HasOne("TicketingSystem.Common.Model.Database.Entities.Venue", "Venue")
                         .WithMany("Events")
                         .HasForeignKey("VenueId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -404,59 +517,114 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.Navigation("Venue");
                 });
 
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Seat", b =>
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.PriceCategory", b =>
                 {
-                    b.HasOne("TicketingSystem.Common.Model.Database.Event", "Event")
-                        .WithMany("Seats")
+                    b.HasOne("TicketingSystem.Common.Model.Database.Entities.Event", "Event")
+                        .WithMany()
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TicketingSystem.Common.Model.Database.Ticket", "Ticket")
-                        .WithOne("Seat")
-                        .HasForeignKey("TicketingSystem.Common.Model.Database.Seat", "SeatId")
+                    b.Navigation("Event");
+                });
+
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Seat", b =>
+                {
+                    b.HasOne("TicketingSystem.Common.Model.Database.Entities.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("TicketingSystem.Common.Model.Database.Entities.PriceCategory", null)
+                        .WithMany("Seats")
+                        .HasForeignKey("PriceCategoryId");
+
+                    b.HasOne("TicketingSystem.Common.Model.Database.Entities.Section", "Section")
+                        .WithMany("Seats")
+                        .HasForeignKey("SectionId");
+
                     b.Navigation("Event");
 
-                    b.Navigation("Ticket");
+                    b.Navigation("Section");
                 });
 
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Ticket", b =>
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Section", b =>
                 {
-                    b.HasOne("TicketingSystem.Common.Model.Database.Person", "Person")
+                    b.HasOne("TicketingSystem.Common.Model.Database.Entities.Venue", "Venue")
+                        .WithMany("Sections")
+                        .HasForeignKey("VenueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Venue");
+                });
+
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Ticket", b =>
+                {
+                    b.HasOne("TicketingSystem.Common.Model.Database.Entities.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TicketingSystem.Common.Model.Database.Entities.Person", "Person")
                         .WithMany("Tickets")
                         .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("TicketingSystem.Common.Model.Database.Entities.PriceCategory", "PriceCategory")
+                        .WithMany()
+                        .HasForeignKey("PriceCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TicketingSystem.Common.Model.Database.Entities.Seat", "Seat")
+                        .WithMany("Tickets")
+                        .HasForeignKey("SeatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
                     b.Navigation("Person");
+
+                    b.Navigation("PriceCategory");
+
+                    b.Navigation("Seat");
                 });
 
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Event", b =>
-                {
-                    b.Navigation("Seats");
-                });
-
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Payment", b =>
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Payment", b =>
                 {
                     b.Navigation("Cart");
                 });
 
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Person", b =>
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Person", b =>
                 {
                     b.Navigation("Tickets");
                 });
 
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Ticket", b =>
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.PriceCategory", b =>
                 {
-                    b.Navigation("Seat");
+                    b.Navigation("Seats");
                 });
 
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Venue", b =>
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Seat", b =>
+                {
+                    b.Navigation("Tickets");
+                });
+
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Section", b =>
+                {
+                    b.Navigation("Seats");
+                });
+
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Venue", b =>
                 {
                     b.Navigation("Events");
+
+                    b.Navigation("Sections");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,6 +1,6 @@
 ﻿using TicketingSystem.Common.Model.Database.Enums;
 
-namespace TicketingSystem.Common.Model.Database
+namespace TicketingSystem.Common.Model.Database.Entities
 {
     public class Cart
     {

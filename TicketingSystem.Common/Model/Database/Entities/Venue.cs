@@ -1,4 +1,4 @@
-﻿namespace TicketingSystem.Common.Model.Database
+﻿namespace TicketingSystem.Common.Model.Database.Entities
 {
     public class Venue
     {
@@ -7,6 +7,8 @@
         public required string Address { get; set; }
         public string? Description { get; set; }
 
-        public ICollection<Event>? Events { get; }
+        public ICollection<Event> Events { get; } = [];
+
+        public ICollection<Section> Sections { get; set; } = [];
     }
 }

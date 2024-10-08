@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace TicketingSystem.Common.Model.Database
+namespace TicketingSystem.Common.Model.Database.Entities
 {
     [Table("CartStatuses")]
     public class CartStatusRow

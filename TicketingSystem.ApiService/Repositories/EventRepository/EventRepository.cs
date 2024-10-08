@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TicketingSystem.Common.Context;
-using TicketingSystem.Common.Model.Database;
+using TicketingSystem.Common.Model.Database.Entities;
 
 namespace TicketingSystem.ApiService.Repositories.EventRepository
 {

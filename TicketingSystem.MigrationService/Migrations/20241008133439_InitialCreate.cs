@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace TicketingSystem.MigrationService.Migrations
 {
     /// <inheritdoc />
-    public partial class IntitalCreate : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,8 +18,7 @@ namespace TicketingSystem.MigrationService.Migrations
                 name: "CartStatuses",
                 columns: table => new
                 {
-                    CartStatusId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    CartStatusId = table.Column<int>(type: "integer", nullable: false),
                     Status = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -58,13 +57,24 @@ namespace TicketingSystem.MigrationService.Migrations
                 name: "SeatStatuses",
                 columns: table => new
                 {
-                    SeatStatusId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    SeatStatusId = table.Column<int>(type: "integer", nullable: false),
                     Status = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SeatStatuses", x => x.SeatStatusId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SeatTypes",
+                columns: table => new
+                {
+                    SeatTypeId = table.Column<int>(type: "integer", nullable: false),
+                    SeatType = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SeatTypes", x => x.SeatTypeId);
                 });
 
             migrationBuilder.CreateTable(
@@ -109,26 +119,6 @@ namespace TicketingSystem.MigrationService.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tickets",
-                columns: table => new
-                {
-                    TicketId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    PriceUsd = table.Column<float>(type: "real", nullable: false),
-                    PersonId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Tickets", x => x.TicketId);
-                    table.ForeignKey(
-                        name: "FK_Tickets_Persons_PersonId",
-                        column: x => x.PersonId,
-                        principalTable: "Persons",
-                        principalColumn: "PersonId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Events",
                 columns: table => new
                 {
@@ -147,6 +137,121 @@ namespace TicketingSystem.MigrationService.Migrations
                         column: x => x.VenueId,
                         principalTable: "Venues",
                         principalColumn: "VenueId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Sections",
+                columns: table => new
+                {
+                    SectionId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    VenueId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sections", x => x.SectionId);
+                    table.ForeignKey(
+                        name: "FK_Sections_Venues_VenueId",
+                        column: x => x.VenueId,
+                        principalTable: "Venues",
+                        principalColumn: "VenueId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PriceCategories",
+                columns: table => new
+                {
+                    PriceCategoryId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    PriceCategoryName = table.Column<string>(type: "text", nullable: false),
+                    PriceCategoryDescription = table.Column<string>(type: "text", nullable: true),
+                    PriceUsd = table.Column<float>(type: "real", nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PriceCategories", x => x.PriceCategoryId);
+                    table.ForeignKey(
+                        name: "FK_PriceCategories_Events_EventId",
+                        column: x => x.EventId,
+                        principalTable: "Events",
+                        principalColumn: "EventId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Seats",
+                columns: table => new
+                {
+                    SeatId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    SeatType = table.Column<int>(type: "integer", nullable: false),
+                    RowNumber = table.Column<int>(type: "integer", nullable: true),
+                    SectionId = table.Column<int>(type: "integer", nullable: true),
+                    EventId = table.Column<int>(type: "integer", nullable: false),
+                    PriceCategoryId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Seats", x => x.SeatId);
+                    table.ForeignKey(
+                        name: "FK_Seats_Events_EventId",
+                        column: x => x.EventId,
+                        principalTable: "Events",
+                        principalColumn: "EventId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Seats_PriceCategories_PriceCategoryId",
+                        column: x => x.PriceCategoryId,
+                        principalTable: "PriceCategories",
+                        principalColumn: "PriceCategoryId");
+                    table.ForeignKey(
+                        name: "FK_Seats_Sections_SectionId",
+                        column: x => x.SectionId,
+                        principalTable: "Sections",
+                        principalColumn: "SectionId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tickets",
+                columns: table => new
+                {
+                    TicketId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    PriceCategoryId = table.Column<int>(type: "integer", nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false),
+                    SeatId = table.Column<int>(type: "integer", nullable: false),
+                    PersonId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tickets", x => x.TicketId);
+                    table.ForeignKey(
+                        name: "FK_Tickets_Events_EventId",
+                        column: x => x.EventId,
+                        principalTable: "Events",
+                        principalColumn: "EventId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Tickets_Persons_PersonId",
+                        column: x => x.PersonId,
+                        principalTable: "Persons",
+                        principalColumn: "PersonId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Tickets_PriceCategories_PriceCategoryId",
+                        column: x => x.PriceCategoryId,
+                        principalTable: "PriceCategories",
+                        principalColumn: "PriceCategoryId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Tickets_Seats_SeatId",
+                        column: x => x.SeatId,
+                        principalTable: "Seats",
+                        principalColumn: "SeatId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -198,39 +303,13 @@ namespace TicketingSystem.MigrationService.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Seats",
-                columns: table => new
-                {
-                    SeatId = table.Column<int>(type: "integer", nullable: false),
-                    Code = table.Column<string>(type: "text", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    EventId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Seats", x => x.SeatId);
-                    table.ForeignKey(
-                        name: "FK_Seats_Events_EventId",
-                        column: x => x.EventId,
-                        principalTable: "Events",
-                        principalColumn: "EventId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Seats_Tickets_SeatId",
-                        column: x => x.SeatId,
-                        principalTable: "Tickets",
-                        principalColumn: "TicketId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.InsertData(
                 table: "CartStatuses",
                 columns: new[] { "CartStatusId", "Status" },
                 values: new object[,]
                 {
-                    { 1, "NotPayed" },
-                    { 2, "Payed" }
+                    { 0, "NotPayed" },
+                    { 1, "Payed" }
                 });
 
             migrationBuilder.InsertData(
@@ -248,9 +327,18 @@ namespace TicketingSystem.MigrationService.Migrations
                 columns: new[] { "SeatStatusId", "Status" },
                 values: new object[,]
                 {
-                    { 1, "Free" },
-                    { 2, "Booked" },
-                    { 3, "Purchased" }
+                    { 0, "Free" },
+                    { 1, "Booked" },
+                    { 2, "Purchased" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "SeatTypes",
+                columns: new[] { "SeatTypeId", "SeatType" },
+                values: new object[,]
+                {
+                    { 0, "DesignatedSeat" },
+                    { 1, "GeneralAdmission" }
                 });
 
             migrationBuilder.InsertData(
@@ -261,7 +349,7 @@ namespace TicketingSystem.MigrationService.Migrations
             migrationBuilder.InsertData(
                 table: "Carts",
                 columns: new[] { "CartId", "CartStatus", "PaymentId", "PersonId" },
-                values: new object[] { 1, 2, 1, 1 });
+                values: new object[] { 1, 1, 1, 1 });
 
             migrationBuilder.InsertData(
                 table: "Events",
@@ -269,19 +357,29 @@ namespace TicketingSystem.MigrationService.Migrations
                 values: new object[] { 1, new DateTime(2024, 12, 30, 19, 0, 0, 0, DateTimeKind.Utc), null, "Новогодний спектакль", 1 });
 
             migrationBuilder.InsertData(
+                table: "Sections",
+                columns: new[] { "SectionId", "VenueId" },
+                values: new object[] { 1, 1 });
+
+            migrationBuilder.InsertData(
+                table: "PriceCategories",
+                columns: new[] { "PriceCategoryId", "EventId", "PriceCategoryDescription", "PriceCategoryName", "PriceUsd" },
+                values: new object[] { 1, 1, null, "Normal seat", 10f });
+
+            migrationBuilder.InsertData(
+                table: "Seats",
+                columns: new[] { "SeatId", "EventId", "PriceCategoryId", "RowNumber", "SeatType", "SectionId", "Status" },
+                values: new object[] { 1, 1, null, 1, 0, 1, 2 });
+
+            migrationBuilder.InsertData(
                 table: "Tickets",
-                columns: new[] { "TicketId", "PersonId", "PriceUsd" },
-                values: new object[] { 1, 1, 10f });
+                columns: new[] { "TicketId", "EventId", "PersonId", "PriceCategoryId", "SeatId" },
+                values: new object[] { 1, 1, 1, 1, 1 });
 
             migrationBuilder.InsertData(
                 table: "CartsTickets",
                 columns: new[] { "CartId", "TicketId" },
                 values: new object[] { 1, 1 });
-
-            migrationBuilder.InsertData(
-                table: "Seats",
-                columns: new[] { "SeatId", "Code", "EventId", "Status" },
-                values: new object[] { 1, "1", 1, 3 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Carts_PaymentId",
@@ -310,14 +408,49 @@ namespace TicketingSystem.MigrationService.Migrations
                 column: "VenueId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PriceCategories_EventId",
+                table: "PriceCategories",
+                column: "EventId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Seats_EventId",
                 table: "Seats",
+                column: "EventId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Seats_PriceCategoryId",
+                table: "Seats",
+                column: "PriceCategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Seats_SectionId",
+                table: "Seats",
+                column: "SectionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sections_VenueId",
+                table: "Sections",
+                column: "VenueId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_EventId",
+                table: "Tickets",
                 column: "EventId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tickets_PersonId",
                 table: "Tickets",
                 column: "PersonId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_PriceCategoryId",
+                table: "Tickets",
+                column: "PriceCategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_SeatId",
+                table: "Tickets",
+                column: "SeatId");
         }
 
         /// <inheritdoc />
@@ -333,16 +466,13 @@ namespace TicketingSystem.MigrationService.Migrations
                 name: "CartTicket");
 
             migrationBuilder.DropTable(
-                name: "Seats");
-
-            migrationBuilder.DropTable(
                 name: "SeatStatuses");
 
             migrationBuilder.DropTable(
-                name: "Carts");
+                name: "SeatTypes");
 
             migrationBuilder.DropTable(
-                name: "Events");
+                name: "Carts");
 
             migrationBuilder.DropTable(
                 name: "Tickets");
@@ -351,10 +481,22 @@ namespace TicketingSystem.MigrationService.Migrations
                 name: "Payments");
 
             migrationBuilder.DropTable(
-                name: "Venues");
+                name: "Persons");
 
             migrationBuilder.DropTable(
-                name: "Persons");
+                name: "Seats");
+
+            migrationBuilder.DropTable(
+                name: "PriceCategories");
+
+            migrationBuilder.DropTable(
+                name: "Sections");
+
+            migrationBuilder.DropTable(
+                name: "Events");
+
+            migrationBuilder.DropTable(
+                name: "Venues");
         }
     }
 }

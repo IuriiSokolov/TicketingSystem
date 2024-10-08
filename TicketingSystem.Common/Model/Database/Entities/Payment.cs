@@ -1,4 +1,4 @@
-﻿namespace TicketingSystem.Common.Model.Database
+﻿namespace TicketingSystem.Common.Model.Database.Entities
 {
     public class Payment
     {
