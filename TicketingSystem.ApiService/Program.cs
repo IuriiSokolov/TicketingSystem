@@ -1,4 +1,4 @@
-using TicketingSystem.ApiService.Extensions;
+using TicketingSystem.ApiService.DependencyInjections;
 using TicketingSystem.Common.Context;
 
 var builder = WebApplication.CreateBuilder(args);
