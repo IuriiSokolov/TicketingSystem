@@ -6,7 +6,7 @@ namespace TicketingSystem.ApiService.Repositories.SeatRepository
 {
     public class SeatRepository : ISeatRepository
     {
-        TicketingDbContext _context;
+        private readonly TicketingDbContext _context;
 
         public SeatRepository(TicketingDbContext context)
         {

@@ -6,7 +6,7 @@ namespace TicketingSystem.ApiService.Repositories.CartRepository
 {
     public class CartRepository : ICartRepository
     {
-        TicketingDbContext _context;
+        private readonly TicketingDbContext _context;
 
         public CartRepository(TicketingDbContext context)
         {

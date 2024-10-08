@@ -6,7 +6,7 @@ namespace TicketingSystem.ApiService.Repositories.VenueRepository
 {
     public class VenueRepository : IVenueRepository
     {
-        TicketingDbContext _context;
+        private readonly TicketingDbContext _context;
 
         public VenueRepository(TicketingDbContext context)
         {

@@ -6,7 +6,7 @@ namespace TicketingSystem.ApiService.Repositories.PaymentRepository
 {
     public class PaymentRepository : IPaymentRepository
     {
-        TicketingDbContext _context;
+        private readonly TicketingDbContext _context;
 
         public PaymentRepository(TicketingDbContext context)
         {

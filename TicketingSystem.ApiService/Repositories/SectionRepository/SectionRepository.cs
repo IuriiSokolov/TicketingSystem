@@ -6,7 +6,7 @@ namespace TicketingSystem.ApiService.Repositories.SectionRepository
 {
     public class SectionRepository : ISectionRepository
     {
-        TicketingDbContext _context;
+        private readonly TicketingDbContext _context;
 
         public SectionRepository(TicketingDbContext context)
         {

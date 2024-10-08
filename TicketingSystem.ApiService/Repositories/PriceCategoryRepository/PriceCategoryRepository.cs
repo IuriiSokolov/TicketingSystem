@@ -6,7 +6,7 @@ namespace TicketingSystem.ApiService.Repositories.PriceCategoryRepository
 {
     public class PriceCategoryRepository : IPriceCategoryRepository
     {
-        TicketingDbContext _context;
+        private readonly TicketingDbContext _context;
 
         public PriceCategoryRepository(TicketingDbContext context)
         {

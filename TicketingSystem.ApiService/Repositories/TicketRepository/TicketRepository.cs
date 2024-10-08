@@ -6,7 +6,7 @@ namespace TicketingSystem.ApiService.Repositories.TickerRepository
 {
     public class TicketRepository : ITicketRepository
     {
-        TicketingDbContext _context;
+        private readonly TicketingDbContext _context;
 
         public TicketRepository(TicketingDbContext context)
         {

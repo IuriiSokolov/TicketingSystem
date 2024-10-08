@@ -6,7 +6,7 @@ namespace TicketingSystem.ApiService.Repositories.EventRepository
 {
     public class EventRepository : IEventRepository
     {
-        TicketingDbContext _context;
+        private readonly TicketingDbContext _context;
 
         public EventRepository(TicketingDbContext context)
         {
