@@ -9,7 +9,7 @@ namespace TicketingSystem.Common.Model.Database.Configurations
         public void Configure(EntityTypeBuilder<PriceCategory> builder)
         {
             builder.HasKey(x => x.PriceCategoryId);
-            builder.HasMany(x => x.Seats)
+            builder.HasMany(x => x.Tickets)
                 .WithOne(x => x.PriceCategory)
                 .HasForeignKey(x => x.PriceCategoryId)
                 .HasPrincipalKey(x => x.PriceCategoryId);

@@ -1,8 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace TicketingSystem.Common.Model.Database.Entities
+﻿namespace TicketingSystem.Common.Model.Database.Entities
 {
-    [PrimaryKey(nameof(CartId), nameof(TicketId))]
     public class CartTicket
     {
         public int CartId { get; set; }

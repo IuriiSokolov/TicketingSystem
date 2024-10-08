@@ -8,7 +8,7 @@ namespace TicketingSystem.Common.Model.Database.Configurations
     {
         public void Configure(EntityTypeBuilder<SeatTypeRow> builder)
         {
-            builder.ToTable("SeatStatuses");
+            builder.ToTable("SeatTypes");
             builder.Property(x => x.SeatTypeId)
                 .ValueGeneratedNever();
             builder.HasKey(x => x.SeatTypeId);

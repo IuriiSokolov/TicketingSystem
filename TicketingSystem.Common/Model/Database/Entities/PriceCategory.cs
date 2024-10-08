@@ -1,5 +1,4 @@
-﻿
-namespace TicketingSystem.Common.Model.Database.Entities
+﻿namespace TicketingSystem.Common.Model.Database.Entities
 {
     public class PriceCategory
     {
@@ -11,6 +10,6 @@ namespace TicketingSystem.Common.Model.Database.Entities
         public required int EventId { get; set; }
         public Event? Event { get; set; }
 
-        public ICollection<Seat> Seats { get; } = [];
+        public ICollection<Ticket> Tickets { get; } = [];
     }
 }
