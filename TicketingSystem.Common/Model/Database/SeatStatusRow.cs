@@ -7,6 +7,7 @@ namespace TicketingSystem.Common.Model.Database
     public class SeatStatusRow
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public required int SeatStatusId { get; set; }
         public required string Status { get; set; }
     }

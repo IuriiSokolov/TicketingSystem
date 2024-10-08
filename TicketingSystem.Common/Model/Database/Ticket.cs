@@ -3,7 +3,9 @@
     public class Ticket
     {
         public int TicketId { get; set; }
-        public required float PriceUsd { get; set; }
+        //public required float PriceUsd { get; set; }
+
+        //public required PriceCategory PriceCategory { get; set; }
 
         public Seat? Seat { get; set; }
 
