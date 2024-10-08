@@ -10,7 +10,17 @@ namespace TicketingSystem.Common.Context
         {
             base.OnModelCreating(modelBuilder);
 
-            //modelBuilder.ApplyConfiguration(new TickerEntityConfiguration());
+            //modelBuilder.ApplyConfiguration(new VenuesEntityConfiguration());
+            //modelBuilder.ApplyConfiguration(new SectionsEntityConfiguration());
+            //modelBuilder.ApplyConfiguration(new SeatsEntityConfiguration());
+            ////modelBuilder.ApplyConfiguration(new SeatStatusesEntityConfiguration());
+            ////modelBuilder.ApplyConfiguration(new SeatTypesEntityConfiguration());
+            //modelBuilder.ApplyConfiguration(new EventsEntityConfiguration());
+            //modelBuilder.ApplyConfiguration(new TicketsEntityConfiguration());
+            //modelBuilder.ApplyConfiguration(new PricesCategoryEntityConfiguration());
+            //modelBuilder.ApplyConfiguration(new PersonsEntityConfiguration());
+            //modelBuilder.ApplyConfiguration(new PaymentsEntityConfiguration());
+            //modelBuilder.ApplyConfiguration(new CartsEntityConfiguration());
 
             modelBuilder.ApplySeeding();
         }

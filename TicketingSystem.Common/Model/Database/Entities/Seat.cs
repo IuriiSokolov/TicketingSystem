@@ -14,6 +14,9 @@ namespace TicketingSystem.Common.Model.Database.Entities
         public required int EventId { get; set; }
         public Event? Event { get; set; }
 
+        public required int PriceCategoryId { get; set; }
+        public PriceCategory? PriceCategory { get; set; }
+
         public ICollection<Ticket> Tickets { get; set; } = [];
     }
 }
