@@ -16,6 +16,7 @@
         public int? PersonId { get; set; }
         public Person? Person { get; set; }
 
-        public ICollection<Cart> Carts { get; set; } = [];
+        public int? CartId { get; set; }
+        public Cart? Cart { get; set; }
     }
 }

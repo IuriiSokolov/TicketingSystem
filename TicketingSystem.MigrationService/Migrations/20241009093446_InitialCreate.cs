@@ -218,11 +218,17 @@ namespace TicketingSystem.MigrationService.Migrations
                     PriceCategoryId = table.Column<int>(type: "integer", nullable: false),
                     EventId = table.Column<int>(type: "integer", nullable: false),
                     SeatId = table.Column<int>(type: "integer", nullable: false),
-                    PersonId = table.Column<int>(type: "integer", nullable: true)
+                    PersonId = table.Column<int>(type: "integer", nullable: true),
+                    CartId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tickets", x => x.TicketId);
+                    table.ForeignKey(
+                        name: "FK_Tickets_Carts_CartId",
+                        column: x => x.CartId,
+                        principalTable: "Carts",
+                        principalColumn: "CartId");
                     table.ForeignKey(
                         name: "FK_Tickets_Events_EventId",
                         column: x => x.EventId,
@@ -245,54 +251,6 @@ namespace TicketingSystem.MigrationService.Migrations
                         column: x => x.SeatId,
                         principalTable: "Seats",
                         principalColumn: "SeatId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CartsTickets",
-                columns: table => new
-                {
-                    CartId = table.Column<int>(type: "integer", nullable: false),
-                    TicketId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CartsTickets", x => new { x.CartId, x.TicketId });
-                    table.ForeignKey(
-                        name: "FK_CartsTickets_Carts_CartId",
-                        column: x => x.CartId,
-                        principalTable: "Carts",
-                        principalColumn: "CartId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CartsTickets_Tickets_TicketId",
-                        column: x => x.TicketId,
-                        principalTable: "Tickets",
-                        principalColumn: "TicketId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CartTicket",
-                columns: table => new
-                {
-                    CartsCartId = table.Column<int>(type: "integer", nullable: false),
-                    TicketsTicketId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CartTicket", x => new { x.CartsCartId, x.TicketsTicketId });
-                    table.ForeignKey(
-                        name: "FK_CartTicket_Carts_CartsCartId",
-                        column: x => x.CartsCartId,
-                        principalTable: "Carts",
-                        principalColumn: "CartId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CartTicket_Tickets_TicketsTicketId",
-                        column: x => x.TicketsTicketId,
-                        principalTable: "Tickets",
-                        principalColumn: "TicketId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -366,13 +324,8 @@ namespace TicketingSystem.MigrationService.Migrations
 
             migrationBuilder.InsertData(
                 table: "Tickets",
-                columns: new[] { "TicketId", "EventId", "PersonId", "PriceCategoryId", "SeatId" },
-                values: new object[] { 1, 1, 1, 1, 1 });
-
-            migrationBuilder.InsertData(
-                table: "CartsTickets",
-                columns: new[] { "CartId", "TicketId" },
-                values: new object[] { 1, 1 });
+                columns: new[] { "TicketId", "CartId", "EventId", "PersonId", "PriceCategoryId", "SeatId" },
+                values: new object[] { 1, 1, 1, 1, 1, 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Carts_PaymentId",
@@ -384,16 +337,6 @@ namespace TicketingSystem.MigrationService.Migrations
                 name: "IX_Carts_PersonId",
                 table: "Carts",
                 column: "PersonId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CartsTickets_TicketId",
-                table: "CartsTickets",
-                column: "TicketId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CartTicket_TicketsTicketId",
-                table: "CartTicket",
-                column: "TicketsTicketId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Events_VenueId",
@@ -419,6 +362,11 @@ namespace TicketingSystem.MigrationService.Migrations
                 name: "IX_Sections_VenueId",
                 table: "Sections",
                 column: "VenueId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_CartId",
+                table: "Tickets",
+                column: "CartId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tickets_EventId",
@@ -448,34 +396,28 @@ namespace TicketingSystem.MigrationService.Migrations
                 name: "CartStatuses");
 
             migrationBuilder.DropTable(
-                name: "CartsTickets");
-
-            migrationBuilder.DropTable(
-                name: "CartTicket");
-
-            migrationBuilder.DropTable(
                 name: "SeatStatuses");
 
             migrationBuilder.DropTable(
                 name: "SeatTypes");
 
             migrationBuilder.DropTable(
-                name: "Carts");
-
-            migrationBuilder.DropTable(
                 name: "Tickets");
 
             migrationBuilder.DropTable(
-                name: "Payments");
-
-            migrationBuilder.DropTable(
-                name: "Persons");
+                name: "Carts");
 
             migrationBuilder.DropTable(
                 name: "PriceCategories");
 
             migrationBuilder.DropTable(
                 name: "Seats");
+
+            migrationBuilder.DropTable(
+                name: "Payments");
+
+            migrationBuilder.DropTable(
+                name: "Persons");
 
             migrationBuilder.DropTable(
                 name: "Events");

@@ -22,7 +22,6 @@ namespace TicketingSystem.Common.Context
             modelBuilder.ApplyConfiguration(new PaymentsEntityConfiguration());
             modelBuilder.ApplyConfiguration(new CartsEntityConfiguration());
             modelBuilder.ApplyConfiguration(new CartStatusesEntityConfiguration());
-            modelBuilder.ApplyConfiguration(new CartsTicketsEntityConfiguration());
 
             modelBuilder.ApplySeeding();
         }
@@ -39,6 +38,5 @@ namespace TicketingSystem.Common.Context
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartStatusRow> CartStatuses { get; set; }
-        public DbSet<CartTicket> CartsTickets { get; set; }
     }
 }

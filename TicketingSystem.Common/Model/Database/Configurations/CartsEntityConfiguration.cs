@@ -9,6 +9,10 @@ namespace TicketingSystem.Common.Model.Database.Configurations
         public void Configure(EntityTypeBuilder<Cart> builder)
         {
             builder.HasKey(x => x.CartId);
+            builder.HasMany(x => x.Tickets)
+                .WithOne(x => x.Cart)
+                .HasForeignKey(x => x.CartId)
+                .HasPrincipalKey(x => x.CartId);
         }
     }
 }

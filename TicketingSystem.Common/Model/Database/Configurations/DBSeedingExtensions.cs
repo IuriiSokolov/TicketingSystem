@@ -12,12 +12,11 @@ namespace TicketingSystem.Common.Model.Database.Configurations
             var initialSection = new Section { SectionId = 1, VenueId = 1 };
             var initialSeat = new Seat { SeatId = 1, SectionId = 1, RowNumber = 1, SeatType = SeatType.DesignatedSeat, Status = SeatStatus.Purchased, EventId = 1 };
             var initialEvent = new Event { EventId = 1, Date = new DateTime(2024, 12, 31).ToUniversalTime(), Name = "Новогодний спектакль", VenueId = 1 };
-            var initialTicket = new Ticket { TicketId = 1, PersonId = 1, EventId = 1, SeatId = 1, PriceCategoryId = 1 };
+            var initialTicket = new Ticket { TicketId = 1, CartId = 1, PersonId = 1, EventId = 1, SeatId = 1, PriceCategoryId = 1 };
             var initialPriceCategory = new PriceCategory { PriceCategoryId = 1, PriceCategoryName = "Normal seat", EventId = 1, PriceUsd = 10 };
             var initialPerson = new Person { PersonId = 1, Name = "Юрий", ContactInfo = "testContact" };
             var initialPayment = new Payment { PaymentId = 1, PaymentTime = new DateTime(2024, 12, 1).ToUniversalTime() };
             var initialCart = new Cart { CartId = 1, PersonId = 1, PaymentId = 1, CartStatus = CartStatus.Payed };
-            var initialCartTicket = new CartTicket { CartId = 1, TicketId = 1 };
 
             modelBuilder.Entity<Venue>().HasData(initialVenue);
             modelBuilder.Entity<Section>().HasData(initialSection);
@@ -28,7 +27,6 @@ namespace TicketingSystem.Common.Model.Database.Configurations
             modelBuilder.Entity<Person>().HasData(initialPerson);
             modelBuilder.Entity<Payment>().HasData(initialPayment);
             modelBuilder.Entity<Cart>().HasData(initialCart);
-            modelBuilder.Entity<CartTicket>().HasData(initialCartTicket);
 
             var seatStatusValues = Enum.GetValues<SeatStatus>().Select(x => (int)x).ToList();
             for (int i = seatStatusValues.Min(); i <= seatStatusValues.Max(); i++)

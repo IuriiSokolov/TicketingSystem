@@ -22,21 +22,6 @@ namespace TicketingSystem.MigrationService.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("CartTicket", b =>
-                {
-                    b.Property<int>("CartsCartId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("TicketsTicketId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("CartsCartId", "TicketsTicketId");
-
-                    b.HasIndex("TicketsTicketId");
-
-                    b.ToTable("CartTicket");
-                });
-
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Cart", b =>
                 {
                     b.Property<int>("CartId")
@@ -96,28 +81,6 @@ namespace TicketingSystem.MigrationService.Migrations
                         {
                             CartStatusId = 1,
                             Status = "Payed"
-                        });
-                });
-
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.CartTicket", b =>
-                {
-                    b.Property<int>("CartId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("TicketId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("CartId", "TicketId");
-
-                    b.HasIndex("TicketId");
-
-                    b.ToTable("CartsTickets");
-
-                    b.HasData(
-                        new
-                        {
-                            CartId = 1,
-                            TicketId = 1
                         });
                 });
 
@@ -380,6 +343,9 @@ namespace TicketingSystem.MigrationService.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TicketId"));
 
+                    b.Property<int?>("CartId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("EventId")
                         .HasColumnType("integer");
 
@@ -393,6 +359,8 @@ namespace TicketingSystem.MigrationService.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("TicketId");
+
+                    b.HasIndex("CartId");
 
                     b.HasIndex("EventId");
 
@@ -408,6 +376,7 @@ namespace TicketingSystem.MigrationService.Migrations
                         new
                         {
                             TicketId = 1,
+                            CartId = 1,
                             EventId = 1,
                             PersonId = 1,
                             PriceCategoryId = 1,
@@ -447,21 +416,6 @@ namespace TicketingSystem.MigrationService.Migrations
                         });
                 });
 
-            modelBuilder.Entity("CartTicket", b =>
-                {
-                    b.HasOne("TicketingSystem.Common.Model.Database.Entities.Cart", null)
-                        .WithMany()
-                        .HasForeignKey("CartsCartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TicketingSystem.Common.Model.Database.Entities.Ticket", null)
-                        .WithMany()
-                        .HasForeignKey("TicketsTicketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Cart", b =>
                 {
                     b.HasOne("TicketingSystem.Common.Model.Database.Entities.Payment", "Payment")
@@ -477,25 +431,6 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.Navigation("Payment");
 
                     b.Navigation("Person");
-                });
-
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.CartTicket", b =>
-                {
-                    b.HasOne("TicketingSystem.Common.Model.Database.Entities.Cart", "Cart")
-                        .WithMany()
-                        .HasForeignKey("CartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TicketingSystem.Common.Model.Database.Entities.Ticket", "Ticket")
-                        .WithMany()
-                        .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cart");
-
-                    b.Navigation("Ticket");
                 });
 
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Event", b =>
@@ -550,6 +485,10 @@ namespace TicketingSystem.MigrationService.Migrations
 
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Ticket", b =>
                 {
+                    b.HasOne("TicketingSystem.Common.Model.Database.Entities.Cart", "Cart")
+                        .WithMany("Tickets")
+                        .HasForeignKey("CartId");
+
                     b.HasOne("TicketingSystem.Common.Model.Database.Entities.Event", "Event")
                         .WithMany("Tickets")
                         .HasForeignKey("EventId")
@@ -572,6 +511,8 @@ namespace TicketingSystem.MigrationService.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Cart");
+
                     b.Navigation("Event");
 
                     b.Navigation("Person");
@@ -579,6 +520,11 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.Navigation("PriceCategory");
 
                     b.Navigation("Seat");
+                });
+
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Cart", b =>
+                {
+                    b.Navigation("Tickets");
                 });
 
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Event", b =>
