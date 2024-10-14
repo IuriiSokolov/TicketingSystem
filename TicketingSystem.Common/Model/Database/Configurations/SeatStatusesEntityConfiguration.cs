@@ -4,14 +4,14 @@ using TicketingSystem.Common.Model.Database.Entities;
 
 namespace TicketingSystem.Common.Model.Database.Configurations
 {
-    internal class SeatStatusesEntityConfiguration : IEntityTypeConfiguration<SeatStatusRow>
+    internal class SeatStatusesEntityConfiguration : IEntityTypeConfiguration<TicketStatusRow>
     {
-        public void Configure(EntityTypeBuilder<SeatStatusRow> builder)
+        public void Configure(EntityTypeBuilder<TicketStatusRow> builder)
         {
             builder.ToTable("SeatStatuses");
-            builder.Property(x => x.SeatStatusId)
+            builder.Property(x => x.TicketStatusId)
                 .ValueGeneratedNever();
-            builder.HasKey(x => x.SeatStatusId);
+            builder.HasKey(x => x.TicketStatusId);
         }
     }
 }

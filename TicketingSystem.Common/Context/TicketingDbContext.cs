@@ -29,7 +29,7 @@ namespace TicketingSystem.Common.Context
         public DbSet<Venue> Venues { get; set; }
         public DbSet<Section> Sections { get; set; }
         public DbSet<Seat> Seats { get; set; }
-        public DbSet<SeatStatusRow> SeatStatuses { get; set; }
+        public DbSet<TicketStatusRow> TicketStatuses { get; set; }
         public DbSet<SeatTypeRow> SeatTypes { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<Ticket> Tickets { get; set; }

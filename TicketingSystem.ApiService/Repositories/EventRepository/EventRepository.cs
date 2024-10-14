@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TicketingSystem.Common.Context;
 using TicketingSystem.Common.Model.Database.Entities;
+using TicketingSystem.Common.Model.DTOs;
 
 namespace TicketingSystem.ApiService.Repositories.EventRepository
 {
@@ -48,6 +49,26 @@ namespace TicketingSystem.ApiService.Repositories.EventRepository
             _context.Events.Remove(thisEvent);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<List<TicketsFromEventAndSectionDto>> GetTicketsOfSectionOfEventAsync(int eventId, int sectionId)
+        {
+            var result = (from sec in _context.Sections
+                          join seats in _context.Seats on sec.SectionId equals seats.SectionId
+                          join t in _context.Tickets on seats.EventId equals t.EventId
+                          join pc in _context.PriceCategories on t.PriceCategoryId equals pc.PriceCategoryId
+                          where t.EventId == eventId && sec.SectionId == sectionId
+                          select new TicketsFromEventAndSectionDto
+                          {
+                              SectionId = seats.SectionId!.Value,
+                              RowNumber = seats.RowNumber,
+                              SeatId = seats.SeatId,
+                              SeatStatus = t.Status,
+                              PriceCategoryId = pc.PriceCategoryId,
+                              PriceCategoryName = pc.PriceCategoryName,
+                          });
+            return await result.ToListAsync();
+
         }
     }
 }

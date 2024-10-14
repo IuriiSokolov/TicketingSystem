@@ -49,5 +49,13 @@ namespace TicketingSystem.ApiService.Repositories.VenueRepository
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<List<Section>> GetSectionsAsync(int venueId)
+        {
+            var result = await _context.Sections.Where(x => x.VenueId == venueId)
+                .ToListAsync();
+            return result;
+        }
+        
     }
 }
