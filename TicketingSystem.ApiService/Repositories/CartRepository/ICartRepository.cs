@@ -8,6 +8,7 @@ namespace TicketingSystem.ApiService.Repositories.CartRepository
         Task<bool> DeleteAsync(int id);
         Task<List<Cart>> GetAllAsync();
         Task<Cart?> GetByIdAsync(int id);
+        Task<List<Ticket>> GetTicketsInCartAsync(Guid cartId);
         Task<Cart> UpdateAsync(Cart cart);
     }
 }

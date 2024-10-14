@@ -1,18 +1,22 @@
-﻿namespace TicketingSystem.ApiService.Endpoints
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using TicketingSystem.ApiService.Repositories.CartRepository;
+using TicketingSystem.Common.Model.DTOs;
+
+namespace TicketingSystem.ApiService.Endpoints
 {
-    public static class OrderEndpoints
+    public class OrderEndpoints : IEndpoints
     {
-        public static void Add(IEndpointRouteBuilder app)
+        public void MapEndpoints(IEndpointRouteBuilder app)
         {
-            using (var scope = app.ServiceProvider.CreateScope())
-            {
-                //var userGroup = app.MapGroup("api/events");
-                //userGroup.MapGet("", GetEvents);
-                //userGroup.MapGet("id", GetEvent);
-                //userGroup.MapPost("", AddEvent);
-                //userGroup.MapPut("", UpdateEvent);
-                //userGroup.MapDelete("", DeleteEvent);
-            }
+            var eventGroup = app.MapGroup("api/orders");
+            eventGroup.MapGet("carts/{cart_id}", GetTicketsInCart);
+        }
+
+        private async Task<Ok<List<TicketDto>>> GetTicketsInCart(Guid cart_id, ICartRepository repo)
+        {
+            var result = await repo.GetTicketsInCartAsync(cart_id);
+            var dtos = result.Select(ticket => new TicketDto(ticket)).ToList();
+            return TypedResults.Ok(dtos);
         }
     }
 }

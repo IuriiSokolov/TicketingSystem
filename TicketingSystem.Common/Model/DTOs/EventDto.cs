@@ -2,23 +2,8 @@
 
 namespace TicketingSystem.Common.Model.DTOs
 {
-    public class EventDto
+    public record struct EventDto(int EventId, string Name, DateTime Date, string? description)
     {
-        public required string Name { get; set; }
-        public required DateTime Date { get; set; }
-        public string? Description { get; set; }
-
-        public required int VenueId { get; set; }
-
-        public Event ToEvent()
-        {
-            return new Event
-            {
-                Date = Date,
-                Name = Name,
-                Description = Description,
-                VenueId = VenueId
-            };
-        }
+        public EventDto(Event thisEvent): this(thisEvent.EventId, thisEvent.Name, thisEvent.Date, thisEvent.Description) { }
     }
 }

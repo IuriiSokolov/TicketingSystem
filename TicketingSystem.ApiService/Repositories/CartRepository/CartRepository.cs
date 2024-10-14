@@ -49,5 +49,11 @@ namespace TicketingSystem.ApiService.Repositories.CartRepository
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<List<Ticket>> GetTicketsInCartAsync(Guid cartId)
+        {
+            var result = await _context.Tickets.Where(ticket => ticket.CartId == cartId).ToListAsync();
+            return result;
+        }
     }
 }

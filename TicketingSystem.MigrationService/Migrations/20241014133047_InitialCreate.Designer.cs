@@ -12,8 +12,8 @@ using TicketingSystem.Common.Context;
 namespace TicketingSystem.MigrationService.Migrations
 {
     [DbContext(typeof(TicketingDbContext))]
-    [Migration("20241014132224_CartIdToGuid")]
-    partial class CartIdToGuid
+    [Migration("20241014133047_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -52,7 +52,7 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasData(
                         new
                         {
-                            CartId = new Guid("5c30d45d-a693-4247-bb36-10908ecacc74"),
+                            CartId = new Guid("2e83c358-5755-4918-a10b-214ddbcc6c2a"),
                             CartStatus = 1,
                             PaymentId = 1,
                             PersonId = 1
@@ -345,7 +345,7 @@ namespace TicketingSystem.MigrationService.Migrations
                         new
                         {
                             TicketId = 1,
-                            CartId = new Guid("5c30d45d-a693-4247-bb36-10908ecacc74"),
+                            CartId = new Guid("2e83c358-5755-4918-a10b-214ddbcc6c2a"),
                             EventId = 1,
                             PersonId = 1,
                             PriceCategoryId = 1,

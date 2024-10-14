@@ -1,7 +1,5 @@
-﻿
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
 using TicketingSystem.ApiService.Repositories.VenueRepository;
-using TicketingSystem.Common.Model.Database.Entities;
 using TicketingSystem.Common.Model.DTOs;
 
 namespace TicketingSystem.ApiService.Endpoints
@@ -15,17 +13,19 @@ namespace TicketingSystem.ApiService.Endpoints
             venueGroup.MapGet("{venue_id}/sections", GetSectionsOfVenue);
         }
 
-        private async Task<Ok<List<Venue>>> GetVenues(IVenueRepository repo)
+        private async Task<Ok<List<VenueDto>>> GetVenues(IVenueRepository repo)
         {
             var venues = await repo.GetAllAsync();
-            return TypedResults.Ok(venues);
+            var dtos = venues.Select(venue => new VenueDto(venue)).ToList();
+            return TypedResults.Ok(dtos);
         }
 
 
-        private async Task<Ok<List<Section>>> GetSectionsOfVenue(int venue_id, IVenueRepository repo)
+        private async Task<Ok<List<SectionDto>>> GetSectionsOfVenue(int venue_id, IVenueRepository repo)
         {
             var sections = await repo.GetSectionsAsync(venue_id);
-            return TypedResults.Ok(sections);
+            var dtos = sections.Select(section => new SectionDto(section)).ToList();
+            return TypedResults.Ok(dtos);
         }
     }
 }
