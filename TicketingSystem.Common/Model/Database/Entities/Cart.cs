@@ -4,7 +4,7 @@ namespace TicketingSystem.Common.Model.Database.Entities
 {
     public class Cart
     {
-        public int CartId { get; set; }
+        public Guid CartId { get; set; }
         public CartStatus CartStatus { get; set; }
 
         public required int PersonId { get; set; }

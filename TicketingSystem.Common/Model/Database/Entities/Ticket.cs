@@ -20,7 +20,7 @@ namespace TicketingSystem.Common.Model.Database.Entities
         public int? PersonId { get; set; }
         public Person? Person { get; set; }
 
-        public int? CartId { get; set; }
+        public Guid? CartId { get; set; }
         public Cart? Cart { get; set; }
     }
 }
