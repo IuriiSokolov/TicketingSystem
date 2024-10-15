@@ -64,7 +64,6 @@ namespace TicketingSystem.ApiService.Repositories.CartRepository
             if (ticket == null)
                 return (null, 0);
             ticket.CartId = cartId;
-            ticket.Status = Common.Model.Database.Enums.TicketStatus.Booked;
             await _context.SaveChangesAsync();
             var cart = await _context.Carts
                 .Include(x => x.Tickets)
@@ -72,6 +71,18 @@ namespace TicketingSystem.ApiService.Repositories.CartRepository
             var categories = await _context.PriceCategories.Where(pc => pc.EventId == eventId).ToListAsync();
             var totalPriceUsd = cart!.Tickets.Sum(ticket => categories.Single(pc => pc.PriceCategoryId == ticket.PriceCategoryId).PriceUsd);
             return (cart, totalPriceUsd);
+        }
+
+        public async Task<bool> RemoveTicketFromCartAsync(Guid cartId, int eventId, int seatId)
+        {
+            var ticket = await _context.Tickets.FirstOrDefaultAsync(ticket => ticket.CartId == cartId
+                && ticket.EventId == eventId
+                && ticket.SeatId == seatId);
+            if (ticket == null)
+                return false;
+            ticket.CartId = null;
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

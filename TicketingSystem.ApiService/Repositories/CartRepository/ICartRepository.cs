@@ -11,6 +11,7 @@ namespace TicketingSystem.ApiService.Repositories.CartRepository
         Task<List<Cart>> GetAllAsync();
         Task<Cart?> GetByIdAsync(int id);
         Task<List<Ticket>> GetTicketsInCartAsync(Guid cartId);
+        Task<bool> RemoveTicketFromCartAsync(Guid cartId, int eventId, int seatId);
         Task<Cart> UpdateAsync(Cart cart);
     }
 }
