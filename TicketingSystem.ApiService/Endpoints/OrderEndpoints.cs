@@ -9,10 +9,11 @@ namespace TicketingSystem.ApiService.Endpoints
     {
         public void MapEndpoints(IEndpointRouteBuilder app)
         {
-            var orderGroup = app.MapGroup("api/orders");
-            orderGroup.MapGet("carts/{cart_id}", GetTicketsInCart);
-            orderGroup.MapPost("carts/{cart_id}", AddTicketToCart);
-            orderGroup.MapDelete("carts/{cart_id}/events/{event_id}/seats/{seat_id}", RemoveTicketFromCart);
+            var orderGroup = app.MapGroup("api/orders/carts");
+            orderGroup.MapGet("{cart_id}", GetTicketsInCart);
+            orderGroup.MapPost("{cart_id}", AddTicketToCart);
+            orderGroup.MapDelete("{cart_id}/events/{event_id}/seats/{seat_id}", RemoveTicketFromCart);
+            orderGroup.MapPut("{cart_id}/book", BookTicketsInCart);
         }
 
         private async Task<Ok<List<TicketDto>>> GetTicketsInCart(Guid cart_id, ICartRepository repo)
@@ -37,6 +38,13 @@ namespace TicketingSystem.ApiService.Endpoints
             var result = await repo.RemoveTicketFromCartAsync(cart_id, event_id, seat_id);
             return result
                 ? TypedResults.Ok()
+                : TypedResults.NotFound();
+        }
+        private async Task<Results<Ok<PaymentDto>, NotFound>> BookTicketsInCart(Guid cart_id, ICartRepository repo)
+        {
+            var result = await repo.BookTicketsInCart(cart_id);
+            return result != null
+                ? TypedResults.Ok(new PaymentDto(result))
                 : TypedResults.NotFound();
         }
     }

@@ -84,5 +84,20 @@ namespace TicketingSystem.ApiService.Repositories.CartRepository
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<Payment?> BookTicketsInCart(Guid cartId)
+        {
+            var cart = await _context.Carts.Include(c => c.Tickets)
+                .FirstOrDefaultAsync(c => c.CartId == cartId);
+            if (cart == null)
+                return null;
+            foreach (var ticket in cart.Tickets)
+            {
+                ticket.Status = Common.Model.Database.Enums.TicketStatus.Booked;
+            }
+            var payment = _context.Payments.Add(new Payment { PaymentStatus = Common.Model.Database.Enums.PaymentStatus.Pending, Cart = cart });
+            await _context.SaveChangesAsync();
+            return payment.Entity;
+        }
     }
 }
