@@ -49,5 +49,55 @@ namespace TicketingSystem.ApiService.Repositories.CartRepository
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<List<Ticket>> GetTicketsInCartAsync(Guid cartId)
+        {
+            var result = await _context.Tickets.Where(ticket => ticket.CartId == cartId).ToListAsync();
+            return result;
+        }
+
+        public async Task<(Cart?, float TotalPriceUsd)> AddTicketToCartAsync(Guid cartId, int eventId, int seatId)
+        {
+            var ticket = await _context.Tickets.FirstOrDefaultAsync(ticket => ticket.EventId == eventId 
+                && ticket.SeatId == seatId
+                && ticket.Status == Common.Model.Database.Enums.TicketStatus.Free);
+            if (ticket == null)
+                return (null, 0);
+            ticket.CartId = cartId;
+            await _context.SaveChangesAsync();
+            var cart = await _context.Carts
+                .Include(x => x.Tickets)
+                .FirstOrDefaultAsync(cart => cart.CartId == cartId);
+            var categories = await _context.PriceCategories.Where(pc => pc.EventId == eventId).ToListAsync();
+            var totalPriceUsd = cart!.Tickets.Sum(ticket => categories.Single(pc => pc.PriceCategoryId == ticket.PriceCategoryId).PriceUsd);
+            return (cart, totalPriceUsd);
+        }
+
+        public async Task<bool> RemoveTicketFromCartAsync(Guid cartId, int eventId, int seatId)
+        {
+            var ticket = await _context.Tickets.FirstOrDefaultAsync(ticket => ticket.CartId == cartId
+                && ticket.EventId == eventId
+                && ticket.SeatId == seatId);
+            if (ticket == null)
+                return false;
+            ticket.CartId = null;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<Payment?> BookTicketsInCart(Guid cartId)
+        {
+            var cart = await _context.Carts.Include(c => c.Tickets)
+                .FirstOrDefaultAsync(c => c.CartId == cartId);
+            if (cart == null)
+                return null;
+            foreach (var ticket in cart.Tickets)
+            {
+                ticket.Status = Common.Model.Database.Enums.TicketStatus.Booked;
+            }
+            var payment = _context.Payments.Add(new Payment { PaymentStatus = Common.Model.Database.Enums.PaymentStatus.Pending, Cart = cart });
+            await _context.SaveChangesAsync();
+            return payment.Entity;
+        }
     }
 }

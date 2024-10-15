@@ -8,6 +8,7 @@ namespace TicketingSystem.ApiService.Repositories.VenueRepository
         Task<bool> DeleteAsync(int id);
         Task<List<Venue>> GetAllAsync();
         Task<Venue?> GetByIdAsync(int id);
+        Task<List<Section>> GetSectionsAsync(int venueId);
         Task<Venue> UpdateAsync(Venue venue);
     }
 }

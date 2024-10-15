@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
-using TicketingSystem.Common.Model.Database.Entities;
+using TicketingSystem.Common.Model.Database.Entities.EnumEntities;
 
 namespace TicketingSystem.Common.Model.Database.Configurations
 {
