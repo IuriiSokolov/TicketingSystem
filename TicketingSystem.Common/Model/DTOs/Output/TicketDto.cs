@@ -1,7 +1,7 @@
 ﻿using TicketingSystem.Common.Model.Database.Entities;
 using TicketingSystem.Common.Model.Database.Enums;
 
-namespace TicketingSystem.Common.Model.DTOs
+namespace TicketingSystem.Common.Model.DTOs.Output
 {
     public record struct TicketDto(int TicketId, int PriceCategoryId, int EventId, int SeatId, TicketStatus Status, int? PersonId, Guid? CartId)
     {

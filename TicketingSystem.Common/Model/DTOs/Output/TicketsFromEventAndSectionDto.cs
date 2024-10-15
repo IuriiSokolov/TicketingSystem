@@ -1,6 +1,6 @@
 ﻿using TicketingSystem.Common.Model.Database.Enums;
 
-namespace TicketingSystem.Common.Model.DTOs
+namespace TicketingSystem.Common.Model.DTOs.Output
 {
     public class TicketsFromEventAndSectionDto
     {
@@ -9,6 +9,6 @@ namespace TicketingSystem.Common.Model.DTOs
         public required int SeatId { get; set; }
         public required TicketStatus SeatStatus { get; set; }
         public required int PriceCategoryId { get; set; }
-        public required string PriceCategoryName{ get; set; }
+        public required string PriceCategoryName { get; set; }
     }
 }

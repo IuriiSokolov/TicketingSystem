@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using TicketingSystem.ApiService.Repositories.VenueRepository;
-using TicketingSystem.Common.Model.DTOs;
+using TicketingSystem.Common.Model.DTOs.Output;
 
 namespace TicketingSystem.ApiService.Endpoints
 {

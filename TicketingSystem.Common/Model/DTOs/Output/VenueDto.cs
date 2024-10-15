@@ -1,6 +1,6 @@
 ﻿using TicketingSystem.Common.Model.Database.Entities;
 
-namespace TicketingSystem.Common.Model.DTOs
+namespace TicketingSystem.Common.Model.DTOs.Output
 {
     public record struct VenueDto(int VenueId, string Name, string Address, string? Description)
     {

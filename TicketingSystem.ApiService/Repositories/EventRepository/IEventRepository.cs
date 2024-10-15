@@ -1,5 +1,5 @@
 ﻿using TicketingSystem.Common.Model.Database.Entities;
-using TicketingSystem.Common.Model.DTOs;
+using TicketingSystem.Common.Model.DTOs.Output;
 
 namespace TicketingSystem.ApiService.Repositories.EventRepository
 {
