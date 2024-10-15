@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TicketingSystem.Common.Model.Attributes;
 using TicketingSystem.Common.Model.Database.Entities;
+using TicketingSystem.Common.Model.Database.Entities.EnumEntities;
 using TicketingSystem.Common.Model.Database.Enums;
 
-namespace TicketingSystem.Common.Model.Database.Configurations
+namespace TicketingSystem.Common.Model.Database.Configurations.Seeding
 {
     public static class DBSeedingExtensions
     {
@@ -16,8 +18,8 @@ namespace TicketingSystem.Common.Model.Database.Configurations
             var initialTicket = new Ticket { TicketId = 1, CartId = cartId, PersonId = 1, EventId = 1, SeatId = 1, PriceCategoryId = 1, Status = TicketStatus.Purchased };
             var initialPriceCategory = new PriceCategory { PriceCategoryId = 1, PriceCategoryName = "Normal seat", EventId = 1, PriceUsd = 10 };
             var initialPerson = new Person { PersonId = 1, Name = "Юрий", ContactInfo = "testContact" };
-            var initialPayment = new Payment { PaymentId = 1, PaymentTime = new DateTime(2024, 12, 1).ToUniversalTime() };
-            var initialCart = new Cart { CartId = cartId, PersonId = 1, PaymentId = 1, CartStatus = CartStatus.Payed };
+            var initialPayment = new Payment { PaymentId = 1, PaymentStatus = PaymentStatus.Paid, PaymentTime = new DateTime(2024, 12, 1).ToUniversalTime() };
+            var initialCart = new Cart { CartId = cartId, PersonId = 1, PaymentId = 1, CartStatus = CartStatus.Paid };
 
             modelBuilder.Entity<Venue>().HasData(initialVenue);
             modelBuilder.Entity<Section>().HasData(initialSection);
@@ -29,37 +31,31 @@ namespace TicketingSystem.Common.Model.Database.Configurations
             modelBuilder.Entity<Payment>().HasData(initialPayment);
             modelBuilder.Entity<Cart>().HasData(initialCart);
 
-            var seatStatusValues = Enum.GetValues<TicketStatus>().Select(x => (int)x).ToList();
-            for (int i = seatStatusValues.Min(); i <= seatStatusValues.Max(); i++)
-            {
-                var seatStatus = new TicketStatusRow
-                {
-                    TicketStatusId = i,
-                    Status = Enum.GetName((TicketStatus)i)!
-                };
-                modelBuilder.Entity<TicketStatusRow>().HasData(seatStatus);
-            }
+            modelBuilder.SeedEnum<TicketStatus, TicketStatusRow>();
+            modelBuilder.SeedEnum<SeatType, SeatTypeRow>();
+            modelBuilder.SeedEnum<CartStatus, CartStatusRow>();
+            modelBuilder.SeedEnum<PaymentStatus, PaymentStatusRow>();
+        }
 
-            var seatTypeValues = Enum.GetValues<SeatType>().Select(x => (int)x).ToList();
-            for (int i = seatTypeValues.Min(); i <= seatTypeValues.Max(); i++)
-            {
-                var seatType = new SeatTypeRow
-                {
-                    SeatTypeId = i,
-                    SeatType = Enum.GetName((SeatType)i)!
-                };
-                modelBuilder.Entity<SeatTypeRow>().HasData(seatType);
-            }
+        private static void SeedEnum<TEnum, TRow>(this ModelBuilder modelBuilder)
+            where TEnum : Enum
+            where TRow : class
+        {
+            var enumNames = Enum.GetNames(typeof(TEnum));
+            var enumValues = Enum.GetValues(typeof(TEnum));
+            var valueField = typeof(TRow).GetProperties()
+                    .Single(f => f.GetCustomAttributes(false).Any(x => x is EnumValueAttribute));
+            var nameField = typeof(TRow).GetProperties()
+                    .Single(f => f.GetCustomAttributes(false).Any(x => x is EnumNameAttribute));
 
-            var cartStatusValues = Enum.GetValues<CartStatus>().Select(x => (int)x).ToList();
-            for (int i = cartStatusValues.Min(); i <= cartStatusValues.Max(); i++)
+            for (int i = 0; i < enumNames.Length; i++)
             {
-                var cartStatus = new CartStatusRow
-                {
-                    CartStatusId = i,
-                    Status = Enum.GetName((CartStatus)i)!
-                };
-                modelBuilder.Entity<CartStatusRow>().HasData(cartStatus);
+                var name = enumNames[i];
+                var value = (int)enumValues.GetValue(i)!;
+                var row = Activator.CreateInstance<TRow>();
+                valueField.SetValue(row, value);
+                nameField.SetValue(row, name);
+                modelBuilder.Entity<TRow>().HasData(row);
             }
         }
     }

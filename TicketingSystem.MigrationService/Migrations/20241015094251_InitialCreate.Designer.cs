@@ -12,7 +12,7 @@ using TicketingSystem.Common.Context;
 namespace TicketingSystem.MigrationService.Migrations
 {
     [DbContext(typeof(TicketingDbContext))]
-    [Migration("20241014133047_InitialCreate")]
+    [Migration("20241015094251_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -52,14 +52,14 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasData(
                         new
                         {
-                            CartId = new Guid("2e83c358-5755-4918-a10b-214ddbcc6c2a"),
+                            CartId = new Guid("568c2e27-4412-41b6-9ead-2c98c6563d9c"),
                             CartStatus = 1,
                             PaymentId = 1,
                             PersonId = 1
                         });
                 });
 
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.CartStatusRow", b =>
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.EnumEntities.CartStatusRow", b =>
                 {
                     b.Property<int>("CartStatusId")
                         .HasColumnType("integer");
@@ -76,12 +76,100 @@ namespace TicketingSystem.MigrationService.Migrations
                         new
                         {
                             CartStatusId = 0,
-                            Status = "NotPayed"
+                            Status = "NotPaid"
                         },
                         new
                         {
                             CartStatusId = 1,
-                            Status = "Payed"
+                            Status = "Paid"
+                        });
+                });
+
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.EnumEntities.PaymentStatusRow", b =>
+                {
+                    b.Property<int>("PaymentStatusId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("PaymentStatusId");
+
+                    b.ToTable("PaymentStatuses", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            PaymentStatusId = 0,
+                            Status = "Pending"
+                        },
+                        new
+                        {
+                            PaymentStatusId = 1,
+                            Status = "Paid"
+                        },
+                        new
+                        {
+                            PaymentStatusId = 2,
+                            Status = "Failed"
+                        });
+                });
+
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.EnumEntities.SeatTypeRow", b =>
+                {
+                    b.Property<int>("SeatTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SeatType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("SeatTypeId");
+
+                    b.ToTable("SeatTypes", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            SeatTypeId = 0,
+                            SeatType = "DesignatedSeat"
+                        },
+                        new
+                        {
+                            SeatTypeId = 1,
+                            SeatType = "GeneralAdmission"
+                        });
+                });
+
+            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.EnumEntities.TicketStatusRow", b =>
+                {
+                    b.Property<int>("TicketStatusId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("TicketStatusId");
+
+                    b.ToTable("SeatStatuses", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            TicketStatusId = 0,
+                            Status = "Free"
+                        },
+                        new
+                        {
+                            TicketStatusId = 1,
+                            Status = "Booked"
+                        },
+                        new
+                        {
+                            TicketStatusId = 2,
+                            Status = "Purchased"
                         });
                 });
 
@@ -130,7 +218,10 @@ namespace TicketingSystem.MigrationService.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PaymentId"));
 
-                    b.Property<DateTime>("PaymentTime")
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("PaymentTime")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("PaymentId");
@@ -141,6 +232,7 @@ namespace TicketingSystem.MigrationService.Migrations
                         new
                         {
                             PaymentId = 1,
+                            PaymentStatus = 1,
                             PaymentTime = new DateTime(2024, 11, 30, 19, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
@@ -250,32 +342,6 @@ namespace TicketingSystem.MigrationService.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.SeatTypeRow", b =>
-                {
-                    b.Property<int>("SeatTypeId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("SeatType")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("SeatTypeId");
-
-                    b.ToTable("SeatTypes", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            SeatTypeId = 0,
-                            SeatType = "DesignatedSeat"
-                        },
-                        new
-                        {
-                            SeatTypeId = 1,
-                            SeatType = "GeneralAdmission"
-                        });
-                });
-
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Section", b =>
                 {
                     b.Property<int>("SectionId")
@@ -345,43 +411,12 @@ namespace TicketingSystem.MigrationService.Migrations
                         new
                         {
                             TicketId = 1,
-                            CartId = new Guid("2e83c358-5755-4918-a10b-214ddbcc6c2a"),
+                            CartId = new Guid("568c2e27-4412-41b6-9ead-2c98c6563d9c"),
                             EventId = 1,
                             PersonId = 1,
                             PriceCategoryId = 1,
                             SeatId = 1,
                             Status = 2
-                        });
-                });
-
-            modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.TicketStatusRow", b =>
-                {
-                    b.Property<int>("TicketStatusId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("TicketStatusId");
-
-                    b.ToTable("SeatStatuses", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            TicketStatusId = 0,
-                            Status = "Free"
-                        },
-                        new
-                        {
-                            TicketStatusId = 1,
-                            Status = "Booked"
-                        },
-                        new
-                        {
-                            TicketStatusId = 2,
-                            Status = "Purchased"
                         });
                 });
 

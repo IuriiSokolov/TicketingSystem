@@ -2,7 +2,7 @@
 {
     public enum CartStatus
     {
-        NotPayed = 0,
-        Payed = 1
+        NotPaid = 0,
+        Paid = 1
     }
 }
