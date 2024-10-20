@@ -5,9 +5,9 @@ namespace TicketingSystem.ApiService.Services.OrderService
 {
     public interface IOrderService
     {
-        Task<CartDto?> AddTicketToCartAsync(Guid cartId, int eventId, int seatId);
+        Task<(CartDto?, string? ErrorMsg)> AddTicketToCartAsync(Guid cartId, int eventId, int seatId);
         Task<PaymentDto?> BookTicketsInCart(Guid cartId);
         Task<List<TicketDto>> GetTicketsInCartAsync(Guid cartId);
-        Task<bool> RemoveTicketFromCartAsync(Guid cartId, int eventId, int seatId);
+        Task<string?> RemoveTicketFromCartAsync(Guid cartId, int eventId, int seatId);
     }
 }

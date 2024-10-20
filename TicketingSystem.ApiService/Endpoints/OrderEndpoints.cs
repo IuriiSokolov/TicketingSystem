@@ -22,21 +22,21 @@ namespace TicketingSystem.ApiService.Endpoints
             return TypedResults.Ok(result);
         }
 
-        private async Task<Results<Ok<CartDto>, NotFound>> AddTicketToCart(Guid cart_id, AddTicketToCartDto dto, IOrderService service)
+        private async Task<Results<Ok<CartDto>, NotFound<string>>> AddTicketToCart(Guid cart_id, AddTicketToCartDto dto, IOrderService service)
         {
-            var resultDto = await service.AddTicketToCartAsync(cart_id, dto.EventId, dto.SeatId);
+            var (resultDto, errorMsg) = await service.AddTicketToCartAsync(cart_id, dto.EventId, dto.SeatId);
 
             return resultDto is null
-                ? TypedResults.NotFound()
+                ? TypedResults.NotFound(errorMsg)
                 : TypedResults.Ok(resultDto.Value);
         }
 
-        private async Task<Results<Ok, NotFound>> RemoveTicketFromCart(Guid cart_id, int event_id, int seat_id, IOrderService service)
+        private async Task<Results<Ok, NotFound<string>>> RemoveTicketFromCart(Guid cart_id, int event_id, int seat_id, IOrderService service)
         {
-            var result = await service.RemoveTicketFromCartAsync(cart_id, event_id, seat_id);
-            return result
+            var error = await service.RemoveTicketFromCartAsync(cart_id, event_id, seat_id);
+            return error is null
                 ? TypedResults.Ok()
-                : TypedResults.NotFound();
+                : TypedResults.NotFound(error);
         }
         private async Task<Results<Ok<PaymentDto>, NotFound>> BookTicketsInCart(Guid cart_id, IOrderService service)
         {

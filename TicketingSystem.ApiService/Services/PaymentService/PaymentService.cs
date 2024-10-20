@@ -31,6 +31,7 @@ namespace TicketingSystem.ApiService.Services.PaymentService
             payment.PaymentStatus = PaymentStatus.Paid;
             payment.PaymentTime = DateTime.UtcNow;
             payment.Cart!.CartStatus = CartStatus.Paid;
+            await _paymentRepository.UpdateAsync(payment);
             foreach (var ticket in payment.Cart.Tickets)
             {
                 ticket.Status = TicketStatus.Purchased;
@@ -49,6 +50,7 @@ namespace TicketingSystem.ApiService.Services.PaymentService
                 return false;
 
             payment.PaymentStatus = PaymentStatus.Failed;
+            await _paymentRepository.UpdateAsync(payment);
             foreach (var ticket in payment.Cart!.Tickets)
             {
                 ticket.Status = TicketStatus.Free;
