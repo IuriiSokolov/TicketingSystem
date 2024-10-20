@@ -49,9 +49,15 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasData(
                         new
                         {
-                            CartId = new Guid("568c2e27-4412-41b6-9ead-2c98c6563d9c"),
+                            CartId = new Guid("4fd9f65b-fdd7-41c3-af09-1b5c4d254fac"),
                             CartStatus = 1,
                             PaymentId = 1,
+                            PersonId = 1
+                        },
+                        new
+                        {
+                            CartId = new Guid("e7405abe-7e3f-4769-8226-2fcac7e946cf"),
+                            CartStatus = 0,
                             PersonId = 1
                         });
                 });
@@ -215,6 +221,9 @@ namespace TicketingSystem.MigrationService.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PaymentId"));
 
+                    b.Property<Guid>("CartId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("PaymentStatus")
                         .HasColumnType("integer");
 
@@ -229,6 +238,7 @@ namespace TicketingSystem.MigrationService.Migrations
                         new
                         {
                             PaymentId = 1,
+                            CartId = new Guid("4fd9f65b-fdd7-41c3-af09-1b5c4d254fac"),
                             PaymentStatus = 1,
                             PaymentTime = new DateTime(2024, 11, 30, 19, 0, 0, 0, DateTimeKind.Utc)
                         });
@@ -297,6 +307,13 @@ namespace TicketingSystem.MigrationService.Migrations
                             EventId = 1,
                             PriceCategoryName = "Normal seat",
                             PriceUsd = 10f
+                        },
+                        new
+                        {
+                            PriceCategoryId = 2,
+                            EventId = 1,
+                            PriceCategoryName = "VIP seat",
+                            PriceUsd = 15f
                         });
                 });
 
@@ -334,6 +351,22 @@ namespace TicketingSystem.MigrationService.Migrations
                             SeatId = 1,
                             EventId = 1,
                             RowNumber = 1,
+                            SeatType = 0,
+                            SectionId = 1
+                        },
+                        new
+                        {
+                            SeatId = 2,
+                            EventId = 1,
+                            RowNumber = 2,
+                            SeatType = 1,
+                            SectionId = 1
+                        },
+                        new
+                        {
+                            SeatId = 3,
+                            EventId = 1,
+                            RowNumber = 3,
                             SeatType = 0,
                             SectionId = 1
                         });
@@ -408,12 +441,28 @@ namespace TicketingSystem.MigrationService.Migrations
                         new
                         {
                             TicketId = 1,
-                            CartId = new Guid("568c2e27-4412-41b6-9ead-2c98c6563d9c"),
+                            CartId = new Guid("4fd9f65b-fdd7-41c3-af09-1b5c4d254fac"),
                             EventId = 1,
                             PersonId = 1,
                             PriceCategoryId = 1,
                             SeatId = 1,
                             Status = 2
+                        },
+                        new
+                        {
+                            TicketId = 2,
+                            EventId = 1,
+                            PriceCategoryId = 1,
+                            SeatId = 2,
+                            Status = 0
+                        },
+                        new
+                        {
+                            TicketId = 3,
+                            EventId = 1,
+                            PriceCategoryId = 2,
+                            SeatId = 3,
+                            Status = 0
                         });
                 });
 

@@ -33,7 +33,8 @@ namespace TicketingSystem.MigrationService.Migrations
                     PaymentId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     PaymentStatus = table.Column<int>(type: "integer", nullable: false),
-                    PaymentTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    PaymentTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CartId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -287,8 +288,8 @@ namespace TicketingSystem.MigrationService.Migrations
 
             migrationBuilder.InsertData(
                 table: "Payments",
-                columns: new[] { "PaymentId", "PaymentStatus", "PaymentTime" },
-                values: new object[] { 1, 1, new DateTime(2024, 11, 30, 19, 0, 0, 0, DateTimeKind.Utc) });
+                columns: new[] { "PaymentId", "CartId", "PaymentStatus", "PaymentTime" },
+                values: new object[] { 1, new Guid("4fd9f65b-fdd7-41c3-af09-1b5c4d254fac"), 1, new DateTime(2024, 11, 30, 19, 0, 0, 0, DateTimeKind.Utc) });
 
             migrationBuilder.InsertData(
                 table: "Persons",
@@ -322,7 +323,11 @@ namespace TicketingSystem.MigrationService.Migrations
             migrationBuilder.InsertData(
                 table: "Carts",
                 columns: new[] { "CartId", "CartStatus", "PaymentId", "PersonId" },
-                values: new object[] { new Guid("568c2e27-4412-41b6-9ead-2c98c6563d9c"), 1, 1, 1 });
+                values: new object[,]
+                {
+                    { new Guid("4fd9f65b-fdd7-41c3-af09-1b5c4d254fac"), 1, 1, 1 },
+                    { new Guid("e7405abe-7e3f-4769-8226-2fcac7e946cf"), 0, null, 1 }
+                });
 
             migrationBuilder.InsertData(
                 table: "Events",
@@ -337,17 +342,31 @@ namespace TicketingSystem.MigrationService.Migrations
             migrationBuilder.InsertData(
                 table: "PriceCategories",
                 columns: new[] { "PriceCategoryId", "EventId", "PriceCategoryDescription", "PriceCategoryName", "PriceUsd" },
-                values: new object[] { 1, 1, null, "Normal seat", 10f });
+                values: new object[,]
+                {
+                    { 1, 1, null, "Normal seat", 10f },
+                    { 2, 1, null, "VIP seat", 15f }
+                });
 
             migrationBuilder.InsertData(
                 table: "Seats",
                 columns: new[] { "SeatId", "EventId", "RowNumber", "SeatType", "SectionId" },
-                values: new object[] { 1, 1, 1, 0, 1 });
+                values: new object[,]
+                {
+                    { 1, 1, 1, 0, 1 },
+                    { 2, 1, 2, 1, 1 },
+                    { 3, 1, 3, 0, 1 }
+                });
 
             migrationBuilder.InsertData(
                 table: "Tickets",
                 columns: new[] { "TicketId", "CartId", "EventId", "PersonId", "PriceCategoryId", "SeatId", "Status" },
-                values: new object[] { 1, new Guid("568c2e27-4412-41b6-9ead-2c98c6563d9c"), 1, 1, 1, 1, 2 });
+                values: new object[,]
+                {
+                    { 1, new Guid("4fd9f65b-fdd7-41c3-af09-1b5c4d254fac"), 1, 1, 1, 1, 2 },
+                    { 2, null, 1, null, 1, 2, 0 },
+                    { 3, null, 1, null, 2, 3, 0 }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Carts_PaymentId",

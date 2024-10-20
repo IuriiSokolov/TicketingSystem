@@ -10,26 +10,33 @@ namespace TicketingSystem.Common.Model.Database.Configurations.Seeding
     {
         public static void ApplySeeding(this ModelBuilder modelBuilder)
         {
-            var cartId = Guid.NewGuid();
-            var initialVenue = new Venue { VenueId = 1, Address = "ул. Зарафшан, 28", Name = "Большой театр Навои" };
-            var initialSection = new Section { SectionId = 1, VenueId = 1 };
-            var initialSeat = new Seat { SeatId = 1, SectionId = 1, RowNumber = 1, SeatType = SeatType.DesignatedSeat, EventId = 1 };
+            var paidCartId = Guid.NewGuid();
+            var emptyCartId = Guid.NewGuid();
+            var venue = new Venue { VenueId = 1, Address = "ул. Зарафшан, 28", Name = "Большой театр Навои" };
+            var section = new Section { SectionId = 1, VenueId = 1 };
+            var normalSeat = new Seat { SeatId = 1, SectionId = 1, RowNumber = 1, SeatType = SeatType.DesignatedSeat, EventId = 1 };
+            var areaSeat = new Seat { SeatId = 2, SectionId = 1, RowNumber = 2, SeatType = SeatType.GeneralAdmission, EventId = 1 };
+            var vipSeat = new Seat { SeatId = 3, SectionId = 1, RowNumber = 3, SeatType = SeatType.DesignatedSeat, EventId = 1 };
             var initialEvent = new Event { EventId = 1, Date = new DateTime(2024, 12, 31).ToUniversalTime(), Name = "Новогодний спектакль", VenueId = 1 };
-            var initialTicket = new Ticket { TicketId = 1, CartId = cartId, PersonId = 1, EventId = 1, SeatId = 1, PriceCategoryId = 1, Status = TicketStatus.Purchased };
-            var initialPriceCategory = new PriceCategory { PriceCategoryId = 1, PriceCategoryName = "Normal seat", EventId = 1, PriceUsd = 10 };
-            var initialPerson = new Person { PersonId = 1, Name = "Юрий", ContactInfo = "testContact" };
-            var initialPayment = new Payment { PaymentId = 1, PaymentStatus = PaymentStatus.Paid, PaymentTime = new DateTime(2024, 12, 1).ToUniversalTime() };
-            var initialCart = new Cart { CartId = cartId, PersonId = 1, PaymentId = 1, CartStatus = CartStatus.Paid };
+            var paidTicket = new Ticket { TicketId = 1, CartId = paidCartId, PersonId = 1, EventId = 1, SeatId = 1, PriceCategoryId = 1, Status = TicketStatus.Purchased };
+            var freeAreaTicket = new Ticket { TicketId = 2, EventId = 1, SeatId = 2, PriceCategoryId = 1, Status = TicketStatus.Free };
+            var freeVipTicket = new Ticket { TicketId = 3, EventId = 1, SeatId = 3, PriceCategoryId = 2, Status = TicketStatus.Free };
+            var normalPriceCategory = new PriceCategory { PriceCategoryId = 1, PriceCategoryName = "Normal seat", EventId = 1, PriceUsd = 10 };
+            var vipPriceCategory = new PriceCategory { PriceCategoryId = 2, PriceCategoryName = "VIP seat", EventId = 1, PriceUsd = 15 };
+            var person = new Person { PersonId = 1, Name = "Юрий", ContactInfo = "testContact" };
+            var paidPayment = new Payment { PaymentId = 1, PaymentStatus = PaymentStatus.Paid, PaymentTime = new DateTime(2024, 12, 1).ToUniversalTime(), CartId = paidCartId };
+            var paidCart = new Cart { CartId = paidCartId, PersonId = 1, PaymentId = 1, CartStatus = CartStatus.Paid };
+            var emptyCart = new Cart { CartId = emptyCartId, PersonId = 1, CartStatus = CartStatus.NotPaid };
 
-            modelBuilder.Entity<Venue>().HasData(initialVenue);
-            modelBuilder.Entity<Section>().HasData(initialSection);
-            modelBuilder.Entity<Seat>().HasData(initialSeat);
+            modelBuilder.Entity<Venue>().HasData(venue);
+            modelBuilder.Entity<Section>().HasData(section);
+            modelBuilder.Entity<Seat>().HasData(normalSeat, areaSeat, vipSeat);
             modelBuilder.Entity<Event>().HasData(initialEvent);
-            modelBuilder.Entity<Ticket>().HasData(initialTicket);
-            modelBuilder.Entity<PriceCategory>().HasData(initialPriceCategory);
-            modelBuilder.Entity<Person>().HasData(initialPerson);
-            modelBuilder.Entity<Payment>().HasData(initialPayment);
-            modelBuilder.Entity<Cart>().HasData(initialCart);
+            modelBuilder.Entity<Ticket>().HasData(paidTicket, freeAreaTicket, freeVipTicket);
+            modelBuilder.Entity<PriceCategory>().HasData(normalPriceCategory, vipPriceCategory);
+            modelBuilder.Entity<Person>().HasData(person);
+            modelBuilder.Entity<Payment>().HasData(paidPayment);
+            modelBuilder.Entity<Cart>().HasData(paidCart, emptyCart);
 
             modelBuilder.SeedEnum<TicketStatus, TicketStatusRow>();
             modelBuilder.SeedEnum<SeatType, SeatTypeRow>();

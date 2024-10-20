@@ -8,6 +8,7 @@ namespace TicketingSystem.Common.Model.Database.Entities
         public required PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
         public DateTime? PaymentTime { get; set; }
 
+        public required Guid CartId { get; set; }
         public Cart? Cart { get; set; }
     }
 }
