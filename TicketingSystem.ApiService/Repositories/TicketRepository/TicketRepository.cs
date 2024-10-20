@@ -56,24 +56,14 @@ namespace TicketingSystem.ApiService.Repositories.TickerRepository
             return await _context.Tickets.FirstOrDefaultAsync(predicate);
         }
 
-        public async Task<List<TicketsFromEventAndSectionDto>> GetTicketsOfSectionOfEventAsync(int eventId, int sectionId)
+        public async Task<List<Ticket>> GetWhereAsync(Expression<Func<Ticket, bool>> predicate, params Expression<Func<Ticket, object>>[] includes)
         {
-            var result = (from sec in _context.Sections
-                          join seats in _context.Seats on sec.SectionId equals seats.SectionId
-                          join t in _context.Tickets on new { seats.EventId, seats.SeatId } equals
-                                                        new { t.EventId, t.SeatId }
-                          join pc in _context.PriceCategories on t.PriceCategoryId equals pc.PriceCategoryId
-                          where t.EventId == eventId && sec.SectionId == sectionId
-                          select new TicketsFromEventAndSectionDto
-                          {
-                              SectionId = seats.SectionId!.Value,
-                              RowNumber = seats.RowNumber,
-                              SeatId = seats.SeatId,
-                              SeatStatus = t.Status,
-                              PriceCategoryId = pc.PriceCategoryId,
-                              PriceCategoryName = pc.PriceCategoryName,
-                          });
-            return await result.ToListAsync();
+            IQueryable<Ticket> queriable = _context.Tickets;
+            for (int i = 0; i < includes.Length; i++)
+            {
+                queriable = queriable.Include(includes[i]);
+            }
+            return await queriable.Where(predicate).ToListAsync();
         }
     }
 }

@@ -16,7 +16,18 @@ namespace TicketingSystem.ApiService.Services.EventService
 
         public async Task<List<TicketsFromEventAndSectionDto>> GetTicketsOfSectionOfEventAsync(int eventId, int sectionId)
         {
-            return await _ticketRepository.GetTicketsOfSectionOfEventAsync(eventId, sectionId);
+            var tickets = await _ticketRepository.GetWhereAsync(t => t.EventId == eventId && t.Seat!.SectionId == sectionId,
+                t => t.Seat!, t => t.PriceCategory!);
+            var dtos = tickets.Select(ticket => new TicketsFromEventAndSectionDto 
+            {
+                SectionId = ticket.Seat!.SectionId!.Value,
+                RowNumber = ticket.Seat!.RowNumber,
+                SeatId = ticket.SeatId,
+                SeatStatus = ticket.Status,
+                PriceCategoryId = ticket.PriceCategoryId,
+                PriceCategoryName = ticket.PriceCategory!.PriceCategoryName
+            }).ToList();
+            return dtos;
         }
 
         public async Task<List<EventDto>> GetAllAsync()
