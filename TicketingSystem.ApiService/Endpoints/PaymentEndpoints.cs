@@ -1,7 +1,5 @@
-﻿
-using Microsoft.AspNetCore.Http.HttpResults;
-using TicketingSystem.ApiService.Repositories.PaymentRepository;
-using TicketingSystem.Common.Model.Database.Entities;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using TicketingSystem.ApiService.Services.PaymentService;
 using TicketingSystem.Common.Model.Database.Enums;
 
 namespace TicketingSystem.ApiService.Endpoints
@@ -16,25 +14,25 @@ namespace TicketingSystem.ApiService.Endpoints
             paymentGroup.MapPost("{payment_id}/failed", FailPayment);
         }
 
-        private async Task<Results<Ok<PaymentStatus>, NotFound>> GetPayment(int paymentId, IPaymentRepository repo)
+        private async Task<Results<Ok<PaymentStatus>, NotFound>> GetPayment(int paymentId, IPaymentService service)
         {
-            var payment = await repo.GetByIdAsync(paymentId);
-            return payment != null
-                ? TypedResults.Ok(payment.PaymentStatus)
-                : TypedResults.NotFound();
+            var paymentStatus = await service.GetStatusByIdAsync(paymentId);
+            return paymentStatus is null
+                ? TypedResults.NotFound()
+                : TypedResults.Ok(paymentStatus.Value);
         }
 
-        private async Task<Results<Ok, NotFound>> CompletePayment(int paymentId, IPaymentRepository repo)
+        private async Task<Results<Ok, NotFound>> CompletePayment(int paymentId, IPaymentService service)
         {
-            bool result = await repo.CompletePayment(paymentId);
+            bool result = await service.CompletePayment(paymentId);
             return result
                 ? TypedResults.Ok()
                 : TypedResults.NotFound();
         }
 
-        private async Task<Results<Ok, NotFound>> FailPayment(int paymentId, IPaymentRepository repo)
+        private async Task<Results<Ok, NotFound>> FailPayment(int paymentId, IPaymentService service)
         {
-            bool result = await repo.FailPayment(paymentId);
+            bool result = await service.FailPayment(paymentId);
             return result
                 ? TypedResults.Ok()
                 : TypedResults.NotFound();

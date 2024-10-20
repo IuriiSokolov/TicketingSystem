@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
-using TicketingSystem.ApiService.Repositories.CartRepository;
+using TicketingSystem.ApiService.Services.OrderService;
 using TicketingSystem.Common.Model.DTOs.Input;
 using TicketingSystem.Common.Model.DTOs.Output;
 
@@ -16,36 +16,34 @@ namespace TicketingSystem.ApiService.Endpoints
             orderGroup.MapPut("{cart_id}/book", BookTicketsInCart);
         }
 
-        private async Task<Ok<List<TicketDto>>> GetTicketsInCart(Guid cart_id, ICartRepository repo)
+        private async Task<Ok<List<TicketDto>>> GetTicketsInCart(Guid cart_id, IOrderService service)
         {
-            var result = await repo.GetTicketsInCartAsync(cart_id);
-            var dtos = result.Select(ticket => new TicketDto(ticket)).ToList();
-            return TypedResults.Ok(dtos);
+            var result = await service.GetTicketsInCartAsync(cart_id);
+            return TypedResults.Ok(result);
         }
 
-        private async Task<Results<Ok<CartDto>, NotFound>> AddTicketToCart(Guid cart_id, AddTicketToCartDto dto, ICartRepository repo)
+        private async Task<Results<Ok<CartDto>, NotFound>> AddTicketToCart(Guid cart_id, AddTicketToCartDto dto, IOrderService service)
         {
-            var (cart, totalPriceUsd) = await repo.AddTicketToCartAsync(cart_id, dto.EventId, dto.SeatId);
-            if (cart == null)
-                return TypedResults.NotFound();
+            var resultDto = await service.AddTicketToCartAsync(cart_id, dto.EventId, dto.SeatId);
 
-            var resultDto = new CartDto(cart, totalPriceUsd);
-            return TypedResults.Ok(resultDto);
+            return resultDto is null
+                ? TypedResults.NotFound()
+                : TypedResults.Ok(resultDto.Value);
         }
 
-        private async Task<Results<Ok, NotFound>> RemoveTicketFromCart(Guid cart_id, int event_id, int seat_id, ICartRepository repo)
+        private async Task<Results<Ok, NotFound>> RemoveTicketFromCart(Guid cart_id, int event_id, int seat_id, IOrderService service)
         {
-            var result = await repo.RemoveTicketFromCartAsync(cart_id, event_id, seat_id);
+            var result = await service.RemoveTicketFromCartAsync(cart_id, event_id, seat_id);
             return result
                 ? TypedResults.Ok()
                 : TypedResults.NotFound();
         }
-        private async Task<Results<Ok<PaymentDto>, NotFound>> BookTicketsInCart(Guid cart_id, ICartRepository repo)
+        private async Task<Results<Ok<PaymentDto>, NotFound>> BookTicketsInCart(Guid cart_id, IOrderService service)
         {
-            var result = await repo.BookTicketsInCart(cart_id);
-            return result != null
-                ? TypedResults.Ok(new PaymentDto(result))
-                : TypedResults.NotFound();
+            var dto = await service.BookTicketsInCart(cart_id);
+            return dto is null
+                ? TypedResults.NotFound()
+                : TypedResults.Ok(dto.Value);
         }
     }
 }

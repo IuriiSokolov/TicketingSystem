@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using TicketingSystem.Common.Context;
 using TicketingSystem.Common.Model.Database.Entities;
 
@@ -50,45 +51,12 @@ namespace TicketingSystem.ApiService.Repositories.PaymentRepository
             return true;
         }
 
-        public async Task<bool> CompletePayment(int paymentId)
+        public async Task<Payment?> FirstOrDefaultWithCartWithTicketsAsync(Expression<Func<Payment, bool>> predicate)
         {
-            var payment = await _context.Payments
+            return await _context.Payments
                 .Include(p => p.Cart)
                 .ThenInclude(c => c!.Tickets)
-                .FirstOrDefaultAsync(x => x.PaymentId == paymentId);
-            if (payment == null
-                || payment.PaymentStatus != Common.Model.Database.Enums.PaymentStatus.Pending)
-                return false;
-            payment.PaymentStatus = Common.Model.Database.Enums.PaymentStatus.Paid;
-            payment.PaymentTime = DateTime.UtcNow;
-            payment.Cart!.CartStatus = Common.Model.Database.Enums.CartStatus.Paid;
-            foreach (var ticket in payment.Cart.Tickets)
-            {
-                ticket.Status = Common.Model.Database.Enums.TicketStatus.Purchased;
-                ticket.PersonId = payment.Cart.PersonId;
-            }
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<bool> FailPayment(int paymentId)
-        {
-            var payment = await _context.Payments
-                .Include(p => p.Cart)
-                .ThenInclude(c => c!.Tickets)
-                .FirstOrDefaultAsync(x => x.PaymentId == paymentId);
-
-            if (payment == null
-                || payment.PaymentStatus != Common.Model.Database.Enums.PaymentStatus.Pending)
-                return false;
-
-            payment.PaymentStatus = Common.Model.Database.Enums.PaymentStatus.Failed;
-            foreach (var ticket in payment.Cart!.Tickets)
-            {
-                ticket.Status = Common.Model.Database.Enums.TicketStatus.Free;
-            }
-            await _context.SaveChangesAsync();
-            return true;
+                .FirstOrDefaultAsync(predicate);
         }
     }
 }
