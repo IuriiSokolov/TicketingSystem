@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using TicketingSystem.Common.Context;
 using TicketingSystem.Common.Model.Database.Entities;
 
@@ -48,6 +49,11 @@ namespace TicketingSystem.ApiService.Repositories.SectionRepository
             _context.Sections.Remove(section);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<List<Section>> GetWhereAsync(Expression<Func<Section, bool>> predicate)
+        {
+            return await _context.Sections.Where(predicate).ToListAsync();
         }
     }
 }

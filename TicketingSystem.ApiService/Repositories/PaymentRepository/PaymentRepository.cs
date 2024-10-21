@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using TicketingSystem.Common.Context;
 using TicketingSystem.Common.Model.Database.Entities;
 
@@ -48,6 +49,14 @@ namespace TicketingSystem.ApiService.Repositories.PaymentRepository
             _context.Payments.Remove(payment);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<Payment?> FirstOrDefaultWithCartWithTicketsAsync(Expression<Func<Payment, bool>> predicate)
+        {
+            return await _context.Payments
+                .Include(p => p.Cart)
+                .ThenInclude(c => c!.Tickets)
+                .FirstOrDefaultAsync(predicate);
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TicketingSystem.Common.Model.Database.Configurations;
+using TicketingSystem.Common.Model.Database.Configurations.Seeding;
 using TicketingSystem.Common.Model.Database.Entities;
+using TicketingSystem.Common.Model.Database.Entities.EnumEntities;
 
 namespace TicketingSystem.Common.Context
 {
@@ -20,6 +22,7 @@ namespace TicketingSystem.Common.Context
             modelBuilder.ApplyConfiguration(new PricesCategoryEntityConfiguration());
             modelBuilder.ApplyConfiguration(new PersonsEntityConfiguration());
             modelBuilder.ApplyConfiguration(new PaymentsEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new PaymentStatusesEntityConfiguration());
             modelBuilder.ApplyConfiguration(new CartsEntityConfiguration());
             modelBuilder.ApplyConfiguration(new CartStatusesEntityConfiguration());
 
@@ -29,13 +32,14 @@ namespace TicketingSystem.Common.Context
         public DbSet<Venue> Venues { get; set; }
         public DbSet<Section> Sections { get; set; }
         public DbSet<Seat> Seats { get; set; }
-        public DbSet<SeatStatusRow> SeatStatuses { get; set; }
+        public DbSet<TicketStatusRow> TicketStatuses { get; set; }
         public DbSet<SeatTypeRow> SeatTypes { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<PriceCategory> PriceCategories { get; set; }
         public DbSet<Person> Persons { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public DbSet<PaymentStatusRow> PaymentStatuses { get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartStatusRow> CartStatuses { get; set; }
     }

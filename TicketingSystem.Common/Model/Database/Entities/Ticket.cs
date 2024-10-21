@@ -1,4 +1,6 @@
-﻿namespace TicketingSystem.Common.Model.Database.Entities
+﻿using TicketingSystem.Common.Model.Database.Enums;
+
+namespace TicketingSystem.Common.Model.Database.Entities
 {
     public class Ticket
     {
@@ -13,10 +15,12 @@
         public required int SeatId { get; set; }
         public Seat? Seat { get; set; }
 
+        public required TicketStatus Status { get; set; }
+
         public int? PersonId { get; set; }
         public Person? Person { get; set; }
 
-        public int? CartId { get; set; }
+        public Guid? CartId { get; set; }
         public Cart? Cart { get; set; }
     }
 }

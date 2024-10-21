@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using TicketingSystem.Common.Context;
 using TicketingSystem.Common.Model.Database.Entities;
 
@@ -20,7 +21,7 @@ namespace TicketingSystem.ApiService.Repositories.CartRepository
             return cart;
         }
 
-        public async Task<Cart?> GetByIdAsync(int id)
+        public async Task<Cart?> GetByIdAsync(Guid id)
         {
             return await _context.Carts.FindAsync(id);
         }
@@ -37,7 +38,7 @@ namespace TicketingSystem.ApiService.Repositories.CartRepository
             return cart;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
             var cart = await _context.Carts.FindAsync(id);
             if (cart == null)
@@ -48,6 +49,19 @@ namespace TicketingSystem.ApiService.Repositories.CartRepository
             _context.Carts.Remove(cart);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<List<Ticket>> GetTicketsInCartAsync(Guid cartId)
+        {
+            var result = await _context.Tickets.Where(ticket => ticket.CartId == cartId).ToListAsync();
+            return result;
+        }
+
+        public async Task<Cart?> FirstOrDefaultWithTicketsAsync(Expression<Func<Cart, bool>> predicate)
+        {
+            return await _context.Carts
+                .Include(x => x.Tickets)
+                .FirstOrDefaultAsync(predicate);
         }
     }
 }
