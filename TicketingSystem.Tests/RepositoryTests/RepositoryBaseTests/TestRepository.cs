@@ -2,9 +2,9 @@
 using TicketingSystem.Common.Context;
 using TicketingSystem.Common.Model.Database.Entities;
 
-namespace TicketingSystem.ApiService.Repositories.SeatRepository
+namespace TicketingSystem.Tests.RepositoryTests.RepositoryBaseTests
 {
-    public class SeatRepository(TicketingDbContext context) : RepositoryBase<Seat>(context), ISeatRepository
+    public class TestRepository(TicketingDbContext context) : RepositoryBase<Venue>(context)
     {
     }
 }

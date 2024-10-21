@@ -1,14 +1,8 @@
-﻿using TicketingSystem.Common.Model.Database.Entities;
-using TicketingSystem.Common.Model.DTOs.Output;
-
+﻿using TicketingSystem.ApiService.Repositories.RepositoryBase;
+using TicketingSystem.Common.Model.Database.Entities;
 namespace TicketingSystem.ApiService.Repositories.EventRepository
 {
-    public interface IEventRepository
+    public interface IEventRepository : IRepositoryBase<Event>
     {
-        Task<Event> AddAsync(Event thisEvent);
-        Task<bool> DeleteAsync(int id);
-        Task<List<Event>> GetAllAsync();
-        Task<Event?> GetByIdAsync(int id);
-        Task<Event> UpdateAsync(Event thisEvent);
     }
 }
