@@ -10,7 +10,6 @@ namespace TicketingSystem.ApiService.Repositories.CartRepository
         Task<Cart?> FirstOrDefaultWithTicketsAsync(Expression<Func<Cart, bool>> predicate);
         Task<List<Cart>> GetAllAsync();
         Task<Cart?> GetByIdAsync(Guid id);
-        Task<List<Ticket>> GetTicketsInCartAsync(Guid cartId);
         Task<Cart> UpdateAsync(Cart cart);
     }
 }

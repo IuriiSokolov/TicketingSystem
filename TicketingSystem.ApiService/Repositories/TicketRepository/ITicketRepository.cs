@@ -11,6 +11,7 @@ namespace TicketingSystem.ApiService.Repositories.TickerRepository
         Task<Ticket?> FirstOrDefaultAsync(Expression<Func<Ticket, bool>> predicate);
         Task<List<Ticket>> GetAllAsync();
         Task<Ticket?> GetByIdAsync(int id);
+        Task<List<Ticket>> GetTicketsInCartAsync(Guid cartId);
         Task<List<Ticket>> GetWhereAsync(Expression<Func<Ticket, bool>> predicate, params Expression<Func<Ticket, object>>[] includes);
         Task<Ticket> UpdateAsync(Ticket ticket);
     }

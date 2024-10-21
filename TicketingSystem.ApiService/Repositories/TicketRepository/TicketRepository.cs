@@ -2,7 +2,6 @@
 using System.Linq.Expressions;
 using TicketingSystem.Common.Context;
 using TicketingSystem.Common.Model.Database.Entities;
-using TicketingSystem.Common.Model.DTOs.Output;
 
 namespace TicketingSystem.ApiService.Repositories.TickerRepository
 {
@@ -64,6 +63,12 @@ namespace TicketingSystem.ApiService.Repositories.TickerRepository
                 queriable = queriable.Include(includes[i]);
             }
             return await queriable.Where(predicate).ToListAsync();
+        }
+
+        public async Task<List<Ticket>> GetTicketsInCartAsync(Guid cartId)
+        {
+            var result = await _context.Tickets.Where(ticket => ticket.CartId == cartId).ToListAsync();
+            return result;
         }
     }
 }

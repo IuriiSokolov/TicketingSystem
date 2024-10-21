@@ -51,12 +51,6 @@ namespace TicketingSystem.ApiService.Repositories.CartRepository
             return true;
         }
 
-        public async Task<List<Ticket>> GetTicketsInCartAsync(Guid cartId)
-        {
-            var result = await _context.Tickets.Where(ticket => ticket.CartId == cartId).ToListAsync();
-            return result;
-        }
-
         public async Task<Cart?> FirstOrDefaultWithTicketsAsync(Expression<Func<Cart, bool>> predicate)
         {
             return await _context.Carts
