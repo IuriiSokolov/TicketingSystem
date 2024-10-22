@@ -13,10 +13,12 @@ namespace TicketingSystem.Tests.EndpointTests
     public class EventEndpointsTests
     {
         private readonly Mock<IEventService> _mockEventService;
+        private readonly EventEndpoints _endpoints;
 
         public EventEndpointsTests()
         {
             _mockEventService = new Mock<IEventService>();
+            _endpoints = new EventEndpoints();
         }
 
         [TestCleanup]
@@ -29,8 +31,7 @@ namespace TicketingSystem.Tests.EndpointTests
         public async Task GetSeatsOfSectionOfEventTest()
         {
             // Arrange
-            var endpoints = new EventEndpoints();
-            var method = endpoints.GetType().GetMethod("GetSeatsOfSectionOfEvent", BindingFlags.NonPublic | BindingFlags.Instance);
+            var method = _endpoints.GetType().GetMethod("GetSeatsOfSectionOfEvent", BindingFlags.NonPublic | BindingFlags.Instance);
             var eventId = 1;
             var sectionId = 1;
 
@@ -51,7 +52,7 @@ namespace TicketingSystem.Tests.EndpointTests
             _mockEventService.Setup(x => x.GetTicketsOfSectionOfEventAsync(eventId, sectionId)).Returns(Task.FromResult(ticketDtos));
 
             // Act
-            var result = await (Task<Ok<List<TicketsFromEventAndSectionDto>>>)method!.Invoke(endpoints, [eventId, sectionId, _mockEventService.Object])!;
+            var result = await (Task<Ok<List<TicketsFromEventAndSectionDto>>>)method!.Invoke(_endpoints, [eventId, sectionId, _mockEventService.Object])!;
 
             // Assert
             result.Should().BeEquivalentTo(expectedResult);
@@ -61,8 +62,7 @@ namespace TicketingSystem.Tests.EndpointTests
         public async Task GetEvents()
         {
             // Arrange
-            var endpoints = new EventEndpoints();
-            var method = endpoints.GetType().GetMethod("GetEvents", BindingFlags.NonPublic | BindingFlags.Instance);
+            var method = _endpoints.GetType().GetMethod("GetEvents", BindingFlags.NonPublic | BindingFlags.Instance);
 
             var eventDtos = new List<EventDto>
             {
@@ -79,7 +79,7 @@ namespace TicketingSystem.Tests.EndpointTests
             _mockEventService.Setup(x => x.GetAllAsync()).Returns(Task.FromResult(eventDtos));
 
             // Act
-            var result = await (Task<Ok<List<EventDto>>>)method!.Invoke(endpoints, [_mockEventService.Object])!;
+            var result = await (Task<Ok<List<EventDto>>>)method!.Invoke(_endpoints, [_mockEventService.Object])!;
 
             // Assert
             result.Should().BeEquivalentTo(expectedResult);

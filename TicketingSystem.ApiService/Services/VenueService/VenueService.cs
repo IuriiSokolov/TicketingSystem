@@ -22,8 +22,11 @@ namespace TicketingSystem.ApiService.Services.VenueService
             return dtos;
         }
 
-        public async Task<List<SectionDto>> GetSectionsAsync(int venueId)
+        public async Task<List<SectionDto>?> GetSectionsAsync(int venueId)
         {
+            var venue = await _venueRepository.GetByIdAsync(venueId);
+            if (venue == null)
+                return null;
             var sections = await _sectionRepository.GetWhereAsync(venue => venue.VenueId == venueId);
             var dtos = sections.Select(section => new SectionDto(section)).ToList();
             return dtos;

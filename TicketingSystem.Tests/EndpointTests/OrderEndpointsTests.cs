@@ -1,19 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Http;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using TicketingSystem.ApiService.Endpoints;
-using TicketingSystem.ApiService.Services.EventService;
 using TicketingSystem.Common.Model.DTOs.Output;
 using TicketingSystem.ApiService.Services.OrderService;
 using FluentAssertions;
 using TicketingSystem.Common.Model.DTOs.Input;
-using Microsoft.AspNetCore.Components.Forms;
 
 namespace TicketingSystem.Tests.EndpointTests
 {
@@ -21,10 +14,12 @@ namespace TicketingSystem.Tests.EndpointTests
     public class OrderEndpointsTests
     {
         private readonly Mock<IOrderService> _mockOrderService;
+        private readonly OrderEndpoints _endpoints;
 
         public OrderEndpointsTests()
         {
             _mockOrderService = new Mock<IOrderService>();
+            _endpoints = new OrderEndpoints();
         }
 
         [TestCleanup]
@@ -37,8 +32,7 @@ namespace TicketingSystem.Tests.EndpointTests
         public async Task GetTicketsInCartTest()
         {
             // Arrange
-            var endpoints = new OrderEndpoints();
-            var method = endpoints.GetType().GetMethod("GetTicketsInCart", BindingFlags.NonPublic | BindingFlags.Instance);
+            var method = _endpoints.GetType().GetMethod("GetTicketsInCart", BindingFlags.NonPublic | BindingFlags.Instance);
 
             Guid cartId = Guid.Empty;
             var ticketDtos = new List<TicketDto>
@@ -60,7 +54,7 @@ namespace TicketingSystem.Tests.EndpointTests
             _mockOrderService.Setup(x => x.GetTicketsInCartAsync(cartId)).Returns(Task.FromResult(ticketDtos));
 
             // Act
-            var result = await (Task<Ok<List<TicketDto>>>)method!.Invoke(endpoints, [cartId, _mockOrderService.Object])!;
+            var result = await (Task<Ok<List<TicketDto>>>)method!.Invoke(_endpoints, [cartId, _mockOrderService.Object])!;
 
             // Assert
             result.Should().BeEquivalentTo(expectedResult);
@@ -72,8 +66,7 @@ namespace TicketingSystem.Tests.EndpointTests
         public async Task AddTicketToCartTest(bool resultDtoExists, bool expectedResultIsOk)
         {
             // Arrange
-            var endpoints = new OrderEndpoints();
-            var method = endpoints.GetType().GetMethod("AddTicketToCart", BindingFlags.NonPublic | BindingFlags.Instance);
+            var method = _endpoints.GetType().GetMethod("AddTicketToCart", BindingFlags.NonPublic | BindingFlags.Instance);
 
             var inputDto = new AddTicketToCartDto
             {
@@ -103,7 +96,7 @@ namespace TicketingSystem.Tests.EndpointTests
             _mockOrderService.Setup(x => x.AddTicketToCartAsync(cartId, inputDto.EventId, inputDto.SeatId)).Returns(Task.FromResult(((CartDto?)cartDto, errorMsg)));
 
             // Act
-            var result = await (Task<Results<Ok<CartDto>, NotFound<string>>>)method!.Invoke(endpoints, [cartId, inputDto, _mockOrderService.Object])!;
+            var result = await (Task<Results<Ok<CartDto>, NotFound<string>>>)method!.Invoke(_endpoints, [cartId, inputDto, _mockOrderService.Object])!;
 
             // Assert
             result.Should().BeEquivalentTo(expectedResult);
@@ -115,8 +108,7 @@ namespace TicketingSystem.Tests.EndpointTests
         public async Task RemoveTicketFromCartTest(bool resultDtoExists, bool expectedResultIsOk)
         {
             // Arrange
-            var endpoints = new OrderEndpoints();
-            var method = endpoints.GetType().GetMethod("RemoveTicketFromCart", BindingFlags.NonPublic | BindingFlags.Instance);
+            var method = _endpoints.GetType().GetMethod("RemoveTicketFromCart", BindingFlags.NonPublic | BindingFlags.Instance);
             var eventId = 1;
             var seatId = 1;
 
@@ -142,7 +134,41 @@ namespace TicketingSystem.Tests.EndpointTests
             _mockOrderService.Setup(x => x.RemoveTicketFromCartAsync(cartId, eventId, seatId)).Returns(Task.FromResult(errorMsg));
 
             // Act
-            var result = await (Task<Results<Ok, NotFound<string>>>)method!.Invoke(endpoints, [cartId, eventId, seatId, _mockOrderService.Object])!;
+            var result = await (Task<Results<Ok, NotFound<string>>>)method!.Invoke(_endpoints, [cartId, eventId, seatId, _mockOrderService.Object])!;
+
+            // Assert
+            result.Should().BeEquivalentTo(expectedResult);
+        }
+
+        [DataTestMethod]
+        [DataRow(true, true)]
+        [DataRow(false, false)]
+        public async Task BookTicketsInCart(bool resultDtoExists, bool expectedResultIsOk)
+        {
+            // Arrange
+            var method = _endpoints.GetType().GetMethod("BookTicketsInCart", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            Guid cartId = Guid.Empty;
+
+            PaymentDto? paymentDto = null;
+            if (resultDtoExists)
+            {
+                paymentDto = new()
+                {
+                    PaymentId = 1,
+                    PaymentStatus = Common.Model.Database.Enums.PaymentStatus.Pending,
+                    PaymentTime = new DateTime(2024, 1, 1)
+                };
+            }
+
+            Results<Ok<PaymentDto>, NotFound> expectedResult = expectedResultIsOk
+                ? TypedResults.Ok(paymentDto!.Value)
+                : TypedResults.NotFound();
+
+            _mockOrderService.Setup(x => x.BookTicketsInCart(cartId)).Returns(Task.FromResult(paymentDto));
+
+            // Act
+            var result = await (Task<Results<Ok<PaymentDto>, NotFound>>)method!.Invoke(_endpoints, [cartId, _mockOrderService.Object])!;
 
             // Assert
             result.Should().BeEquivalentTo(expectedResult);
