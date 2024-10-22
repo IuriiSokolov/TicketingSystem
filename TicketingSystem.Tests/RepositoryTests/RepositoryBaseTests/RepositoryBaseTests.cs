@@ -11,12 +11,22 @@ namespace TicketingSystem.Tests.RepositoryTests.RepositoryBaseTests
     public class RepositoryBaseTests
     {
         private readonly Mock<TicketingDbContext> _mockContext;
+        private readonly Mock<DbSet<Venue>> _mockSet;
         private readonly TestRepository _testRepository;
 
         public RepositoryBaseTests()
         {
             _mockContext = new Mock<TicketingDbContext>();
             _testRepository = new TestRepository(_mockContext.Object);
+            _mockSet = new Mock<DbSet<Venue>>();
+            _mockContext.Setup(x => x.Set<Venue>()).Returns(_mockSet.Object);
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            _mockContext.Verify();
+            _mockSet.Verify();
         }
 
         [TestMethod]
@@ -29,15 +39,12 @@ namespace TicketingSystem.Tests.RepositoryTests.RepositoryBaseTests
                 Name = "testName",
             };
 
-            var mockSet = new Mock<DbSet<Venue>>();
-            _mockContext.Setup(x => x.Set<Venue>()).Returns(mockSet.Object);
-
             // Act
             var result = await _testRepository.AddAsync(venue);
 
             // Assert
             result.Should().Be(venue);
-            mockSet.Verify(x => x.AddAsync(venue, CancellationToken.None), Times.Once);
+            _mockSet.Verify(x => x.AddAsync(venue, CancellationToken.None), Times.Once);
             _mockContext.Verify(x => x.SaveChangesAsync(CancellationToken.None), Times.Once);
         }
 
@@ -58,16 +65,13 @@ namespace TicketingSystem.Tests.RepositoryTests.RepositoryBaseTests
                 venue
             };
 
-            var mockSet = new Mock<DbSet<Venue>>();
-            mockSet.Setup(x => x.FindAsync(id)).Returns(ValueTask.FromResult((Venue?)venue));
-            _mockContext.Setup(x => x.Set<Venue>()).Returns(mockSet.Object);
+            _mockSet.Setup(x => x.FindAsync(id)).Returns(ValueTask.FromResult((Venue?)venue));
 
             // Act
             var result = await _testRepository.GetByIdAsync(id);
 
             // Assert
             result.Should().Be(venue);
-            mockSet.Verify(x => x.FindAsync(id), Times.Once);
         }
 
         [TestMethod]
@@ -92,7 +96,6 @@ namespace TicketingSystem.Tests.RepositoryTests.RepositoryBaseTests
 
             // Assert
             result.Should().BeEquivalentTo(venues);
-            _mockContext.Verify(x => x.Set<Venue>(), Times.Once);
         }
 
         [TestMethod]
@@ -123,7 +126,6 @@ namespace TicketingSystem.Tests.RepositoryTests.RepositoryBaseTests
 
             // Assert
             result.Should().BeEquivalentTo(venueNew);
-            _mockContext.Verify(x => x.Set<Venue>(), Times.Once);
             _mockContext.Verify(x => x.SaveChangesAsync(CancellationToken.None), Times.Once);
         }
 
@@ -147,19 +149,16 @@ namespace TicketingSystem.Tests.RepositoryTests.RepositoryBaseTests
                 venues.Add(venue);
             }
 
-            var mockSet = new Mock<DbSet<Venue>>();
-            mockSet.Setup(x => x.FindAsync(id)).Returns(ValueTask.FromResult(venue));
-            _mockContext.Setup(x => x.Set<Venue>()).Returns(mockSet.Object);
+            _mockSet.Setup(x => x.FindAsync(id)).Returns(ValueTask.FromResult(venue));
 
             // Act
             var result = await _testRepository.DeleteAsync(id);
 
             // Assert
             result.Should().Be(expectedResult);
-            mockSet.Verify(x => x.FindAsync(id), Times.Once);
             if (venueExists)
             {
-                mockSet.Verify(x => x.Remove(venue!), Times.Once);
+                _mockSet.Verify(x => x.Remove(venue!), Times.Once);
                 _mockContext.Verify(x => x.SaveChangesAsync(CancellationToken.None), Times.Once);
             }
         }
