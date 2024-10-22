@@ -22,11 +22,5 @@ namespace TicketingSystem.ApiService.Repositories.TickerRepository
             }
             return await queriable.Where(predicate).ToListAsync();
         }
-
-        public async Task<List<Ticket>> GetTicketsInCartAsync(Guid cartId)
-        {
-            var result = await Context.Tickets.Where(ticket => ticket.CartId == cartId).ToListAsync();
-            return result;
-        }
     }
 }

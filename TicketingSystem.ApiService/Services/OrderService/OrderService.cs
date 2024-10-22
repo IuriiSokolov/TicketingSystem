@@ -28,7 +28,7 @@ namespace TicketingSystem.ApiService.Services.OrderService
 
         public async Task<List<TicketDto>> GetTicketsInCartAsync(Guid cartId)
         {
-            var tickets = await _ticketRepository.GetTicketsInCartAsync(cartId);
+            var tickets = await _ticketRepository.GetWhereAsync(ticket => ticket.CartId == cartId);
             var dtos = tickets.Select(ticket => new TicketDto(ticket)).ToList();
             return dtos;
         }
