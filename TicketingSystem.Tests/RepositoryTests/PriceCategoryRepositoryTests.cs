@@ -23,8 +23,6 @@ namespace TicketingSystem.Tests.RepositoryTests
         public async Task GetWhereAsync()
         {
             // Arrange
-            Guid cartId = Guid.Empty;
-
             var priceCategory = new PriceCategory
             {
                 EventId = 1,
