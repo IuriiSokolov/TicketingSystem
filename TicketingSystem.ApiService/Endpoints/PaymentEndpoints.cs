@@ -11,7 +11,7 @@ namespace TicketingSystem.ApiService.Endpoints
             var paymentGroup = app.MapGroup("api/payments");
             paymentGroup.MapGet("{paymentId}", GetPayment);
             paymentGroup.MapPost("{paymentId}/complete", CompletePayment);
-            paymentGroup.MapPost("{payment_id}/failed", FailPayment);
+            paymentGroup.MapPost("{paymentId}/failed", FailPayment);
         }
 
         private async Task<Results<Ok<PaymentStatus>, NotFound>> GetPayment(int paymentId, IPaymentService service)

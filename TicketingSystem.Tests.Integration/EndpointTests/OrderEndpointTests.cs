@@ -1,6 +1,4 @@
 using FluentAssertions;
-using FluentAssertions.Common;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Json;
 using TicketingSystem.Common.Context;
@@ -8,14 +6,14 @@ using TicketingSystem.Common.Model.Database.Entities;
 using TicketingSystem.Common.Model.DTOs.Input;
 using TicketingSystem.Common.Model.DTOs.Output;
 
-namespace TicketingSystem.Tests.Integration
+namespace TicketingSystem.Tests.Integration.EndpointTests
 {
-    public class TicketingControllerTests : IClassFixture<TicketingWebApplicationFactory>
+    public class OrderEndpointTests : IClassFixture<TicketingWebApplicationFactory>
     {
         private readonly HttpClient _client;
         private readonly TicketingDbContext _context;
 
-        public TicketingControllerTests(TicketingWebApplicationFactory applicationFactory)
+        public OrderEndpointTests(TicketingWebApplicationFactory applicationFactory)
         {
             _client = applicationFactory.CreateClient();
             var scope = applicationFactory.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
@@ -26,8 +24,9 @@ namespace TicketingSystem.Tests.Integration
         public async Task AddTicketToCartTest()
         {
             // Arrange
-            await Init();
-            var (cart, ticket) = await InitCartAndTicket();
+            const int ids = 1;
+            await Init(ids);
+            var (cart, ticket) = await InitCartAndTicket(ids);
             var inputDto = new AddTicketToCartDto
             {
                 EventId = ticket.EventId,
@@ -52,23 +51,62 @@ namespace TicketingSystem.Tests.Integration
             resultCartDto.Should().BeEquivalentTo(expectedCartDto);
         }
 
-        private async Task<(Cart, Ticket)> InitCartAndTicket()
+        [Fact]
+        public async Task RemoveTicketFromCartTest()
+        {
+            // Arrange
+            const int ids = 2;
+            await Init(ids);
+            var (cart, ticket) = await InitCartAndTicket(ids, true);
+
+            // Act
+            var result = await _client.DeleteAsync($"api/orders/carts/{cart.CartId}/events/{ticket.EventId}/seats/{ticket.SeatId}");
+
+            // Assert
+            result.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        }
+
+        [Fact]
+        public async Task BookTicketsInCartTest()
+        {
+            // Arrange
+            const int ids = 3;
+            await Init(ids);
+            var (cart, _) = await InitCartAndTicket(ids, true);
+
+            var expectedPaymentDto = new PaymentDto
+            {
+                PaymentId = 1,
+                PaymentStatus = Common.Model.Database.Enums.PaymentStatus.Pending,
+                PaymentTime = null
+            };
+
+            // Act
+            var result = await _client.PutAsync($"api/orders/carts/{cart.CartId}/book", null);
+
+            // Assert
+            var resultPaymentDto = await result.Content.ReadFromJsonAsync<PaymentDto>();
+            resultPaymentDto.Should().BeEquivalentTo(expectedPaymentDto);
+        }
+
+        private async Task<(Cart, Ticket)> InitCartAndTicket(int ids, bool ticketInCart = false)
         {
             var cartId = Guid.NewGuid();
             var cart = new Cart
             {
                 CartId = cartId,
-                PersonId = 1,
+                PersonId = ids,
                 CartStatus = Common.Model.Database.Enums.CartStatus.NotPaid,
             };
             await _context.Carts.AddAsync(cart);
 
             var ticket = new Ticket
             {
-                EventId = 1,
-                PriceCategoryId = 1,
-                SeatId = 1,
+                EventId = ids,
+                PriceCategoryId = ids,
+                SeatId = ids,
                 Status = Common.Model.Database.Enums.TicketStatus.Free,
+                CartId = ticketInCart ? cartId : null
             };
             await _context.Tickets.AddAsync(ticket);
 
@@ -76,46 +114,46 @@ namespace TicketingSystem.Tests.Integration
             return (cart, ticket);
         }
 
-        private async Task Init()
+        private async Task Init(int ids)
         {
             var person = new Person
             {
-                PersonId = 1,
+                PersonId = ids,
                 Name = "TestPerson",
                 ContactInfo = ""
             };
             var priceCategory = new PriceCategory
             {
-                EventId = 1,
-                PriceCategoryId = 1,
+                EventId = ids,
+                PriceCategoryId = ids,
                 PriceCategoryName = "testPC",
                 PriceUsd = 10
             };
             var newEvent = new Event
             {
-                EventId = 1,
+                EventId = ids,
                 Date = new DateTime(2024, 1, 1).ToUniversalTime(),
                 Name = "testEvent",
-                VenueId = 1
+                VenueId = ids
             };
             var venue = new Venue
             {
-                VenueId = 1,
+                VenueId = ids,
                 Address = "testAddress",
                 Name = "testEvent"
             };
             var section = new Section
             {
-                SectionId = 1,
-                VenueId = 1
+                SectionId = ids,
+                VenueId = ids
             };
             var seat = new Seat
             {
-                SeatId = 1,
-                EventId = 1,
+                SeatId = ids,
+                EventId = ids,
                 SeatType = Common.Model.Database.Enums.SeatType.DesignatedSeat,
                 RowNumber = 1,
-                SectionId = 1,
+                SectionId = ids,
             };
             await _context.Persons.AddAsync(person);
             await _context.PriceCategories.AddAsync(priceCategory);
