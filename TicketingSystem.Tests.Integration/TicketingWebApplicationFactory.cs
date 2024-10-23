@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
@@ -53,7 +55,9 @@ namespace TicketingSystem.Tests.Integration
             await _dbContainer.StartAsync();
             using var scope = Services.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<TicketingDbContext>();
-            await dbContext.Database.MigrateAsync();
+            var firstMigration = dbContext.Database.GetPendingMigrations().FirstOrDefault();
+            await dbContext.GetService<IMigrator>().MigrateAsync(firstMigration);
+            //await dbContext.Database.MigrateAsync();
         }
         public new Task DisposeAsync()
         {
@@ -61,37 +65,37 @@ namespace TicketingSystem.Tests.Integration
         }
     }
 
-    public class PostgresConfigSource : IConfigurationSource
-    {
-        public IConfigurationProvider Build(IConfigurationBuilder builder) =>
-            new PostgresConfigProvider();
-    }
+    //public class PostgresConfigSource : IConfigurationSource
+    //{
+    //    public IConfigurationProvider Build(IConfigurationBuilder builder) =>
+    //        new PostgresConfigProvider();
+    //}
 
-    public class PostgresConfigProvider : ConfigurationProvider
-    {
-        private static readonly TaskFactory TaskFactory = new TaskFactory(CancellationToken.None, TaskCreationOptions.None, TaskContinuationOptions.None, TaskScheduler.Default);
+    //public class PostgresConfigProvider : ConfigurationProvider
+    //{
+    //    private static readonly TaskFactory TaskFactory = new TaskFactory(CancellationToken.None, TaskCreationOptions.None, TaskContinuationOptions.None, TaskScheduler.Default);
 
-        public override void Load()
-        {
-            TaskFactory.StartNew(LoadAsync)
-                .Unwrap()
-                .ConfigureAwait(false)
-                .GetAwaiter()
-                .GetResult();
-        }
+    //    public override void Load()
+    //    {
+    //        TaskFactory.StartNew(LoadAsync)
+    //            .Unwrap()
+    //            .ConfigureAwait(false)
+    //            .GetAwaiter()
+    //            .GetResult();
+    //    }
 
-        public async Task LoadAsync()
-        {
-            var postgresContainer = new PostgreSqlBuilder()
-                .WithImage("postgres:latest")
-                .WithDatabase("TicketingDB")
-                .WithUsername("postgres")
-                .WithPassword("1234567890")
-                .WithPortBinding(5555, 5432)
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(5432))
-                .Build();
-            await postgresContainer.StartAsync().ConfigureAwait(false);
-            Set("ConnectionStrings:TicketingDB", postgresContainer.GetConnectionString());
-        }
-    }
+    //    public async Task LoadAsync()
+    //    {
+    //        var postgresContainer = new PostgreSqlBuilder()
+    //            .WithImage("postgres:latest")
+    //            .WithDatabase("TicketingDB")
+    //            .WithUsername("postgres")
+    //            .WithPassword("1234567890")
+    //            .WithPortBinding(5555, 5432)
+    //            .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(5432))
+    //            .Build();
+    //        await postgresContainer.StartAsync().ConfigureAwait(false);
+    //        Set("ConnectionStrings:TicketingDB", postgresContainer.GetConnectionString());
+    //    }
+    //}
 }
