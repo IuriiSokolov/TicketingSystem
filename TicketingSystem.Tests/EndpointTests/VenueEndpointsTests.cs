@@ -1,15 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Http;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using TicketingSystem.ApiService.Endpoints;
-using TicketingSystem.ApiService.Services.PaymentService;
-using TicketingSystem.Common.Model.Database.Enums;
 using TicketingSystem.ApiService.Services.VenueService;
 using TicketingSystem.Common.Model.DTOs.Output;
 using FluentAssertions;

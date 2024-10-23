@@ -4,6 +4,8 @@ using TicketingSystem.Common.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddNpgsqlDbContext<TicketingDbContext>("TicketingDB");
+//builder.Services.AddDbContext<TicketingDbContext>();
+
 
 // Add service defaults & Aspire components.
 builder.AddServiceDefaults();
@@ -28,3 +30,5 @@ app.MapEndpoints();
 app.MapDefaultEndpoints();
 
 app.Run();
+
+public interface IApiMarker { }

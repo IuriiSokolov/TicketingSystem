@@ -14,6 +14,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicketingSystem.Common", "T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicketingSystem.MigrationService", "TicketingSystem.MigrationService\TicketingSystem.MigrationService.csproj", "{009C1719-363C-458F-98F6-B96C4882016F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketingSystem.Tests.Integration", "TicketingSystem.Tests.Integration\TicketingSystem.Tests.Integration.csproj", "{901C2C15-5D0C-4BF5-959D-C75A0B0F499C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{009C1719-363C-458F-98F6-B96C4882016F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{009C1719-363C-458F-98F6-B96C4882016F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{009C1719-363C-458F-98F6-B96C4882016F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{901C2C15-5D0C-4BF5-959D-C75A0B0F499C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{901C2C15-5D0C-4BF5-959D-C75A0B0F499C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{901C2C15-5D0C-4BF5-959D-C75A0B0F499C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{901C2C15-5D0C-4BF5-959D-C75A0B0F499C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

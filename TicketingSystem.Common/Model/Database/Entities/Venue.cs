@@ -1,5 +1,8 @@
-﻿namespace TicketingSystem.Common.Model.Database.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace TicketingSystem.Common.Model.Database.Entities
 {
+    [Table("Venues")]
     public class Venue
     {
         public int VenueId { get; set; }
