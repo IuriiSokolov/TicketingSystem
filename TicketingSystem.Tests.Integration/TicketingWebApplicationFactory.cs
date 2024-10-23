@@ -19,11 +19,8 @@ namespace TicketingSystem.Tests.Integration
                 .WithImage("postgres:latest")
                 .WithDatabase("TicketingDB")
                 .WithUsername("postgres")
-                .WithPassword("1234567890")
-                .WithPortBinding(5555, 5432)
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(5432))
+                .WithPassword("postgres")
                 .Build();
-
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
@@ -55,9 +52,14 @@ namespace TicketingSystem.Tests.Integration
             await _dbContainer.StartAsync();
             using var scope = Services.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<TicketingDbContext>();
-            var firstMigration = dbContext.Database.GetPendingMigrations().FirstOrDefault();
-            await dbContext.GetService<IMigrator>().MigrateAsync(firstMigration);
-            //await dbContext.Database.MigrateAsync();
+
+            foreach (var migration in dbContext.Database.GetPendingMigrations())
+            {
+                if (!migration.Contains("Seed"))
+                {
+                    await dbContext.GetService<IMigrator>().MigrateAsync(migration);
+                }
+            }
         }
         public new Task DisposeAsync()
         {

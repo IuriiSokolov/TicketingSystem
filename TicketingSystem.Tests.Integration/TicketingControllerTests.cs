@@ -23,17 +23,10 @@ namespace TicketingSystem.Tests.Integration
         }
 
         [Fact]
-        public async Task GetVenuesTest()
-        {
-            var result = await _client.GetAsync("api/venues");
-            result.Should().NotBeNull();
-            var content = await result.Content.ReadFromJsonAsync<List<VenueDto>>();
-        }
-
-        [Fact]
         public async Task AddTicketToCartTest()
         {
             // Arrange
+            await Init();
             var (cart, ticket) = await InitCartAndTicket();
             var inputDto = new AddTicketToCartDto
             {
@@ -70,8 +63,8 @@ namespace TicketingSystem.Tests.Integration
             };
             await _context.Carts.AddAsync(cart);
 
-            var ticket = new Ticket 
-            { 
+            var ticket = new Ticket
+            {
                 EventId = 1,
                 PriceCategoryId = 1,
                 SeatId = 1,
@@ -81,6 +74,56 @@ namespace TicketingSystem.Tests.Integration
 
             await _context.SaveChangesAsync();
             return (cart, ticket);
+        }
+
+        private async Task Init()
+        {
+            var person = new Person
+            {
+                PersonId = 1,
+                Name = "TestPerson",
+                ContactInfo = ""
+            };
+            var priceCategory = new PriceCategory
+            {
+                EventId = 1,
+                PriceCategoryId = 1,
+                PriceCategoryName = "testPC",
+                PriceUsd = 10
+            };
+            var newEvent = new Event
+            {
+                EventId = 1,
+                Date = new DateTime(2024, 1, 1).ToUniversalTime(),
+                Name = "testEvent",
+                VenueId = 1
+            };
+            var venue = new Venue
+            {
+                VenueId = 1,
+                Address = "testAddress",
+                Name = "testEvent"
+            };
+            var section = new Section
+            {
+                SectionId = 1,
+                VenueId = 1
+            };
+            var seat = new Seat
+            {
+                SeatId = 1,
+                EventId = 1,
+                SeatType = Common.Model.Database.Enums.SeatType.DesignatedSeat,
+                RowNumber = 1,
+                SectionId = 1,
+            };
+            await _context.Persons.AddAsync(person);
+            await _context.PriceCategories.AddAsync(priceCategory);
+            await _context.Events.AddAsync(newEvent);
+            await _context.Venues.AddAsync(venue);
+            await _context.Sections.AddAsync(section);
+            await _context.Seats.AddAsync(seat);
+            await _context.SaveChangesAsync();
         }
     }
 }

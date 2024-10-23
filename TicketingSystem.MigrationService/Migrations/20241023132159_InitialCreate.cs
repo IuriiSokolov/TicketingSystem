@@ -287,16 +287,6 @@ namespace TicketingSystem.MigrationService.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Payments",
-                columns: new[] { "PaymentId", "CartId", "PaymentStatus", "PaymentTime" },
-                values: new object[] { 1, new Guid("4fd9f65b-fdd7-41c3-af09-1b5c4d254fac"), 1, new DateTime(2024, 11, 30, 19, 0, 0, 0, DateTimeKind.Utc) });
-
-            migrationBuilder.InsertData(
-                table: "Persons",
-                columns: new[] { "PersonId", "ContactInfo", "Name" },
-                values: new object[] { 1, "testContact", "Юрий" });
-
-            migrationBuilder.InsertData(
                 table: "SeatStatuses",
                 columns: new[] { "TicketStatusId", "Status" },
                 values: new object[,]
@@ -313,59 +303,6 @@ namespace TicketingSystem.MigrationService.Migrations
                 {
                     { 0, "DesignatedSeat" },
                     { 1, "GeneralAdmission" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Venues",
-                columns: new[] { "VenueId", "Address", "Description", "Name" },
-                values: new object[] { 1, "ул. Зарафшан, 28", null, "Большой театр Навои" });
-
-            migrationBuilder.InsertData(
-                table: "Carts",
-                columns: new[] { "CartId", "CartStatus", "PaymentId", "PersonId" },
-                values: new object[,]
-                {
-                    { new Guid("4fd9f65b-fdd7-41c3-af09-1b5c4d254fac"), 1, 1, 1 },
-                    { new Guid("e7405abe-7e3f-4769-8226-2fcac7e946cf"), 0, null, 1 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Events",
-                columns: new[] { "EventId", "Date", "Description", "Name", "VenueId" },
-                values: new object[] { 1, new DateTime(2024, 12, 30, 19, 0, 0, 0, DateTimeKind.Utc), null, "Новогодний спектакль", 1 });
-
-            migrationBuilder.InsertData(
-                table: "Sections",
-                columns: new[] { "SectionId", "VenueId" },
-                values: new object[] { 1, 1 });
-
-            migrationBuilder.InsertData(
-                table: "PriceCategories",
-                columns: new[] { "PriceCategoryId", "EventId", "PriceCategoryDescription", "PriceCategoryName", "PriceUsd" },
-                values: new object[,]
-                {
-                    { 1, 1, null, "Normal seat", 10f },
-                    { 2, 1, null, "VIP seat", 15f }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Seats",
-                columns: new[] { "SeatId", "EventId", "RowNumber", "SeatType", "SectionId" },
-                values: new object[,]
-                {
-                    { 1, 1, 1, 0, 1 },
-                    { 2, 1, 2, 1, 1 },
-                    { 3, 1, 3, 0, 1 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Tickets",
-                columns: new[] { "TicketId", "CartId", "EventId", "PersonId", "PriceCategoryId", "SeatId", "Status" },
-                values: new object[,]
-                {
-                    { 1, new Guid("4fd9f65b-fdd7-41c3-af09-1b5c4d254fac"), 1, 1, 1, 1, 2 },
-                    { 2, null, 1, null, 1, 2, 0 },
-                    { 3, null, 1, null, 2, 3, 0 }
                 });
 
             migrationBuilder.CreateIndex(

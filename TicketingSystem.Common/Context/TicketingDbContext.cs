@@ -30,6 +30,7 @@ namespace TicketingSystem.Common.Context
             modelBuilder.ApplyConfiguration(new CartsEntityConfiguration());
             modelBuilder.ApplyConfiguration(new CartStatusesEntityConfiguration());
 
+            modelBuilder.ApplyEnumSeeding();
             modelBuilder.ApplySeeding();
         }
 

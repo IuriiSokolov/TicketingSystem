@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 using TicketingSystem.Common.Model.Attributes;
 using TicketingSystem.Common.Model.Database.Entities;
 using TicketingSystem.Common.Model.Database.Entities.EnumEntities;
@@ -8,6 +9,13 @@ namespace TicketingSystem.Common.Model.Database.Configurations.Seeding
 {
     public static class DBSeedingExtensions
     {
+        public static void ApplyEnumSeeding(this ModelBuilder modelBuilder)
+        {
+            modelBuilder.SeedEnum<TicketStatus, TicketStatusRow>();
+            modelBuilder.SeedEnum<SeatType, SeatTypeRow>();
+            modelBuilder.SeedEnum<CartStatus, CartStatusRow>();
+            modelBuilder.SeedEnum<PaymentStatus, PaymentStatusRow>();
+        }
         public static void ApplySeeding(this ModelBuilder modelBuilder)
         {
             var paidCartId = Guid.NewGuid();
@@ -37,11 +45,6 @@ namespace TicketingSystem.Common.Model.Database.Configurations.Seeding
             modelBuilder.Entity<Person>().HasData(person);
             modelBuilder.Entity<Payment>().HasData(paidPayment);
             modelBuilder.Entity<Cart>().HasData(paidCart, emptyCart);
-
-            modelBuilder.SeedEnum<TicketStatus, TicketStatusRow>();
-            modelBuilder.SeedEnum<SeatType, SeatTypeRow>();
-            modelBuilder.SeedEnum<CartStatus, CartStatusRow>();
-            modelBuilder.SeedEnum<PaymentStatus, PaymentStatusRow>();
         }
 
         private static void SeedEnum<TEnum, TRow>(this ModelBuilder modelBuilder)
