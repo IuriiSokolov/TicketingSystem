@@ -20,10 +20,12 @@ namespace TicketingSystem.ApiService.Endpoints
         }
 
 
-        private async Task<Ok<List<SectionDto>>> GetSectionsOfVenue(int venue_id, IVenueService service)
+        private async Task<Results<Ok<List<SectionDto>>, NotFound>> GetSectionsOfVenue(int venue_id, IVenueService service)
         {
             var dtos = await service.GetSectionsAsync(venue_id);
-            return TypedResults.Ok(dtos);
+            return dtos == null
+                ? TypedResults.NotFound()
+                : TypedResults.Ok(dtos);
         }
     }
 }

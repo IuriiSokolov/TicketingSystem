@@ -1,13 +1,9 @@
-﻿using TicketingSystem.Common.Model.Database.Entities;
+﻿using TicketingSystem.ApiService.Repositories.RepositoryBase;
+using TicketingSystem.Common.Model.Database.Entities;
 
 namespace TicketingSystem.ApiService.Repositories.PersonRepository
 {
-    public interface IPersonRepository
+    public interface IPersonRepository : IRepositoryBase<Person>
     {
-        Task<Person> AddAsync(Person person);
-        Task<bool> DeleteAsync(int id);
-        Task<List<Person>> GetAllAsync();
-        Task<Person?> GetByIdAsync(int id);
-        Task<Person> UpdateAsync(Person person);
     }
 }

@@ -8,6 +8,10 @@ namespace TicketingSystem.Common.Context
 {
     public class TicketingDbContext(DbContextOptions<TicketingDbContext> options) : DbContext(options)
     {
+        public TicketingDbContext(): this(new DbContextOptions<TicketingDbContext>())
+        {
+            
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -26,21 +30,22 @@ namespace TicketingSystem.Common.Context
             modelBuilder.ApplyConfiguration(new CartsEntityConfiguration());
             modelBuilder.ApplyConfiguration(new CartStatusesEntityConfiguration());
 
+            modelBuilder.ApplyEnumSeeding();
             modelBuilder.ApplySeeding();
         }
 
-        public DbSet<Venue> Venues { get; set; }
-        public DbSet<Section> Sections { get; set; }
-        public DbSet<Seat> Seats { get; set; }
-        public DbSet<TicketStatusRow> TicketStatuses { get; set; }
-        public DbSet<SeatTypeRow> SeatTypes { get; set; }
-        public DbSet<Event> Events { get; set; }
-        public DbSet<Ticket> Tickets { get; set; }
-        public DbSet<PriceCategory> PriceCategories { get; set; }
-        public DbSet<Person> Persons { get; set; }
-        public DbSet<Payment> Payments { get; set; }
-        public DbSet<PaymentStatusRow> PaymentStatuses { get; set; }
-        public DbSet<Cart> Carts { get; set; }
-        public DbSet<CartStatusRow> CartStatuses { get; set; }
+        public virtual DbSet<Venue> Venues { get; set; }
+        public virtual DbSet<Section> Sections { get; set; }
+        public virtual DbSet<Seat> Seats { get; set; }
+        public virtual DbSet<TicketStatusRow> TicketStatuses { get; set; }
+        public virtual DbSet<SeatTypeRow> SeatTypes { get; set; }
+        public virtual DbSet<Event> Events { get; set; }
+        public virtual DbSet<Ticket> Tickets { get; set; }
+        public virtual DbSet<PriceCategory> PriceCategories { get; set; }
+        public virtual DbSet<Person> Persons { get; set; }
+        public virtual DbSet<Payment> Payments { get; set; }
+        public virtual DbSet<PaymentStatusRow> PaymentStatuses { get; set; }
+        public virtual DbSet<Cart> Carts { get; set; }
+        public virtual DbSet<CartStatusRow> CartStatuses { get; set; }
     }
 }

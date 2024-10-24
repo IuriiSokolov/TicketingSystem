@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TicketingSystem.Common.Context;
@@ -11,9 +12,11 @@ using TicketingSystem.Common.Context;
 namespace TicketingSystem.MigrationService.Migrations
 {
     [DbContext(typeof(TicketingDbContext))]
-    partial class TicketingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241023132159_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,21 +48,6 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasIndex("PersonId");
 
                     b.ToTable("Carts");
-
-                    b.HasData(
-                        new
-                        {
-                            CartId = new Guid("83c90a1e-08f4-4d0a-bce9-1b1b51a95401"),
-                            CartStatus = 1,
-                            PaymentId = 1,
-                            PersonId = 1
-                        },
-                        new
-                        {
-                            CartId = new Guid("046ca055-2b7c-4e07-b610-5d8815f325c7"),
-                            CartStatus = 0,
-                            PersonId = 1
-                        });
                 });
 
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.EnumEntities.CartStatusRow", b =>
@@ -202,15 +190,6 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasIndex("VenueId");
 
                     b.ToTable("Events");
-
-                    b.HasData(
-                        new
-                        {
-                            EventId = 1,
-                            Date = new DateTime(2024, 12, 30, 19, 0, 0, 0, DateTimeKind.Utc),
-                            Name = "Новогодний спектакль",
-                            VenueId = 1
-                        });
                 });
 
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Payment", b =>
@@ -233,15 +212,6 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasKey("PaymentId");
 
                     b.ToTable("Payments");
-
-                    b.HasData(
-                        new
-                        {
-                            PaymentId = 1,
-                            CartId = new Guid("83c90a1e-08f4-4d0a-bce9-1b1b51a95401"),
-                            PaymentStatus = 1,
-                            PaymentTime = new DateTime(2024, 11, 30, 19, 0, 0, 0, DateTimeKind.Utc)
-                        });
                 });
 
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Person", b =>
@@ -263,14 +233,6 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasKey("PersonId");
 
                     b.ToTable("Persons");
-
-                    b.HasData(
-                        new
-                        {
-                            PersonId = 1,
-                            ContactInfo = "testContact",
-                            Name = "Юрий"
-                        });
                 });
 
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.PriceCategory", b =>
@@ -299,22 +261,6 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasIndex("EventId");
 
                     b.ToTable("PriceCategories");
-
-                    b.HasData(
-                        new
-                        {
-                            PriceCategoryId = 1,
-                            EventId = 1,
-                            PriceCategoryName = "Normal seat",
-                            PriceUsd = 10f
-                        },
-                        new
-                        {
-                            PriceCategoryId = 2,
-                            EventId = 1,
-                            PriceCategoryName = "VIP seat",
-                            PriceUsd = 15f
-                        });
                 });
 
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Seat", b =>
@@ -344,32 +290,6 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasIndex("SectionId");
 
                     b.ToTable("Seats");
-
-                    b.HasData(
-                        new
-                        {
-                            SeatId = 1,
-                            EventId = 1,
-                            RowNumber = 1,
-                            SeatType = 0,
-                            SectionId = 1
-                        },
-                        new
-                        {
-                            SeatId = 2,
-                            EventId = 1,
-                            RowNumber = 2,
-                            SeatType = 1,
-                            SectionId = 1
-                        },
-                        new
-                        {
-                            SeatId = 3,
-                            EventId = 1,
-                            RowNumber = 3,
-                            SeatType = 0,
-                            SectionId = 1
-                        });
                 });
 
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Section", b =>
@@ -388,13 +308,6 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasIndex("VenueId");
 
                     b.ToTable("Sections");
-
-                    b.HasData(
-                        new
-                        {
-                            SectionId = 1,
-                            VenueId = 1
-                        });
                 });
 
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Ticket", b =>
@@ -436,34 +349,6 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasIndex("SeatId");
 
                     b.ToTable("Tickets");
-
-                    b.HasData(
-                        new
-                        {
-                            TicketId = 1,
-                            CartId = new Guid("83c90a1e-08f4-4d0a-bce9-1b1b51a95401"),
-                            EventId = 1,
-                            PersonId = 1,
-                            PriceCategoryId = 1,
-                            SeatId = 1,
-                            Status = 2
-                        },
-                        new
-                        {
-                            TicketId = 2,
-                            EventId = 1,
-                            PriceCategoryId = 1,
-                            SeatId = 2,
-                            Status = 0
-                        },
-                        new
-                        {
-                            TicketId = 3,
-                            EventId = 1,
-                            PriceCategoryId = 2,
-                            SeatId = 3,
-                            Status = 0
-                        });
                 });
 
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Venue", b =>
@@ -488,14 +373,6 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasKey("VenueId");
 
                     b.ToTable("Venues");
-
-                    b.HasData(
-                        new
-                        {
-                            VenueId = 1,
-                            Address = "ул. Зарафшан, 28",
-                            Name = "Большой театр Навои"
-                        });
                 });
 
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Cart", b =>

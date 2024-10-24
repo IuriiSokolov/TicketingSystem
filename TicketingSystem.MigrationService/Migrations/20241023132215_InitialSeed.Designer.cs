@@ -12,8 +12,8 @@ using TicketingSystem.Common.Context;
 namespace TicketingSystem.MigrationService.Migrations
 {
     [DbContext(typeof(TicketingDbContext))]
-    [Migration("20241020143617_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241023132215_InitialSeed")]
+    partial class InitialSeed
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -52,14 +52,14 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasData(
                         new
                         {
-                            CartId = new Guid("4fd9f65b-fdd7-41c3-af09-1b5c4d254fac"),
+                            CartId = new Guid("83c90a1e-08f4-4d0a-bce9-1b1b51a95401"),
                             CartStatus = 1,
                             PaymentId = 1,
                             PersonId = 1
                         },
                         new
                         {
-                            CartId = new Guid("e7405abe-7e3f-4769-8226-2fcac7e946cf"),
+                            CartId = new Guid("046ca055-2b7c-4e07-b610-5d8815f325c7"),
                             CartStatus = 0,
                             PersonId = 1
                         });
@@ -241,7 +241,7 @@ namespace TicketingSystem.MigrationService.Migrations
                         new
                         {
                             PaymentId = 1,
-                            CartId = new Guid("4fd9f65b-fdd7-41c3-af09-1b5c4d254fac"),
+                            CartId = new Guid("83c90a1e-08f4-4d0a-bce9-1b1b51a95401"),
                             PaymentStatus = 1,
                             PaymentTime = new DateTime(2024, 11, 30, 19, 0, 0, 0, DateTimeKind.Utc)
                         });
@@ -444,7 +444,7 @@ namespace TicketingSystem.MigrationService.Migrations
                         new
                         {
                             TicketId = 1,
-                            CartId = new Guid("4fd9f65b-fdd7-41c3-af09-1b5c4d254fac"),
+                            CartId = new Guid("83c90a1e-08f4-4d0a-bce9-1b1b51a95401"),
                             EventId = 1,
                             PersonId = 1,
                             PriceCategoryId = 1,

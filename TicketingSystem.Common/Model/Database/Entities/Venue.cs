@@ -1,4 +1,6 @@
-﻿namespace TicketingSystem.Common.Model.Database.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace TicketingSystem.Common.Model.Database.Entities
 {
     public class Venue
     {
