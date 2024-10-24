@@ -2,6 +2,7 @@
 using TicketingSystem.ApiService.Services.OrderService;
 using TicketingSystem.Common.Model.DTOs.Input;
 using TicketingSystem.Common.Model.DTOs.Output;
+using TicketingSystem.Redis;
 
 namespace TicketingSystem.ApiService.Endpoints
 {
@@ -22,7 +23,7 @@ namespace TicketingSystem.ApiService.Endpoints
             return TypedResults.Ok(result);
         }
 
-        private async Task<Results<Ok<CartDto>, NotFound<string>>> AddTicketToCart(Guid cart_id, AddTicketToCartDto dto, IOrderService service)
+        private async Task<Results<Ok<CartDto>, NotFound<string>>> AddTicketToCart(Guid cart_id, AddTicketToCartDto dto, IOrderService service, IRedisCacheService cache)
         {
             var (resultDto, errorMsg) = await service.AddTicketToCartAsync(cart_id, dto.EventId, dto.SeatId);
 

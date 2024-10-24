@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.2.1" />
+    <PackageReference Include="Aspire.StackExchange.Redis" Version="8.2.2" />
+    <PackageReference Include="Aspire.StackExchange.Redis.OutputCaching" Version="8.2.2" />
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.8.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.8.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.8.1" />
@@ -16,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TicketingSystem.Common\TicketingSystem.Common.csproj" />
+    <ProjectReference Include="..\TicketingSystem.Redis\TicketingSystem.Redis.csproj" />
     <ProjectReference Include="..\TicketingSystem.ServiceDefaults\TicketingSystem.ServiceDefaults.csproj" />
   </ItemGroup>
 
