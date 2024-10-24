@@ -2,7 +2,6 @@
 
 namespace TicketingSystem.Common.Model.Database.Entities
 {
-    [Table("Venues")]
     public class Venue
     {
         public int VenueId { get; set; }
