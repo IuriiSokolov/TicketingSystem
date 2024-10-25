@@ -7,6 +7,8 @@ using TicketingSystem.Common.Model.DTOs.Output;
 using TicketingSystem.ApiService.Services.OrderService;
 using FluentAssertions;
 using TicketingSystem.Common.Model.DTOs.Input;
+using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace TicketingSystem.Tests.EndpointTests
 {
@@ -14,11 +16,13 @@ namespace TicketingSystem.Tests.EndpointTests
     public class OrderEndpointsTests
     {
         private readonly Mock<IOrderService> _mockOrderService;
+        private readonly Mock<IOutputCacheStore> _mockOutputCacheStore;
         private readonly OrderEndpoints _endpoints;
 
         public OrderEndpointsTests()
         {
             _mockOrderService = new Mock<IOrderService>();
+            _mockOutputCacheStore = new Mock<IOutputCacheStore>();
             _endpoints = new OrderEndpoints();
         }
 
@@ -96,7 +100,7 @@ namespace TicketingSystem.Tests.EndpointTests
             _mockOrderService.Setup(x => x.AddTicketToCartAsync(cartId, inputDto.EventId, inputDto.SeatId)).Returns(Task.FromResult(((CartDto?)cartDto, errorMsg)));
 
             // Act
-            var result = await (Task<Results<Ok<CartDto>, NotFound<string>>>)method!.Invoke(_endpoints, [cartId, inputDto, _mockOrderService.Object])!;
+            var result = await (Task<Results<Ok<CartDto>, NotFound<string>>>)method!.Invoke(_endpoints, [cartId, inputDto, _mockOrderService.Object, _mockOutputCacheStore.Object])!;
 
             // Assert
             result.Should().BeEquivalentTo(expectedResult);

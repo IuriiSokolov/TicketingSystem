@@ -2,7 +2,6 @@
 using TicketingSystem.Common.Model.DTOs.Output;
 using TicketingSystem.ApiService.Services.EventService;
 using TicketingSystem.Redis;
-using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.Extensions.Primitives;
 
 namespace TicketingSystem.ApiService.Endpoints
@@ -29,7 +28,7 @@ namespace TicketingSystem.ApiService.Endpoints
             return TypedResults.Ok(result);
         }
 
-        private async Task<Ok<List<EventDto>>> GetEvents(IEventService service, IOutputCacheStore cacheStore, HttpContext context)
+        private async Task<Ok<List<EventDto>>> GetEvents(IEventService service, HttpContext context)
         {
             context.Response.Headers.Append("Cache-Control", new StringValues("max-age=600"));
             var result = await service.GetAllAsync();

@@ -15,12 +15,15 @@ namespace TicketingSystem.Tests.EndpointTests
     {
         private readonly Mock<IEventService> _mockEventService;
         private readonly Mock<IRedisCacheService> _mockCache;
+        private readonly Mock<HttpContext> _mockHttpContext;
         private readonly EventEndpoints _endpoints;
 
         public EventEndpointsTests()
         {
             _mockEventService = new Mock<IEventService>();
             _mockCache = new Mock<IRedisCacheService>();
+            _mockHttpContext = new Mock<HttpContext>();
+            _mockHttpContext.Setup(x => x.Response.Headers).Returns(new HeaderDictionary());
             _endpoints = new EventEndpoints();
         }
 
@@ -54,7 +57,14 @@ namespace TicketingSystem.Tests.EndpointTests
             _mockEventService.Setup(x => x.GetTicketsOfSectionOfEventAsync(eventId, sectionId)).Returns(Task.FromResult(ticketDtos));
 
             // Act
-            var result = await (Task<Ok<List<TicketsFromEventAndSectionDto>>>)method!.Invoke(_endpoints, [eventId, sectionId, _mockEventService.Object, _mockCache.Object])!;
+            var result = await (Task<Ok<List<TicketsFromEventAndSectionDto>>>)method!.Invoke(_endpoints,
+            [
+                eventId,
+                sectionId,
+                _mockEventService.Object,
+                _mockCache.Object,
+                _mockHttpContext.Object
+            ])!;
 
             // Assert
             result.Should().BeEquivalentTo(expectedResult);
@@ -81,7 +91,7 @@ namespace TicketingSystem.Tests.EndpointTests
             _mockEventService.Setup(x => x.GetAllAsync()).Returns(Task.FromResult(eventDtos));
 
             // Act
-            var result = await (Task<Ok<List<EventDto>>>)method!.Invoke(_endpoints, [_mockEventService.Object, _mockCache.Object])!;
+            var result = await (Task<Ok<List<EventDto>>>)method!.Invoke(_endpoints, [_mockEventService.Object, _mockHttpContext.Object])!;
 
             // Assert
             result.Should().BeEquivalentTo(expectedResult);

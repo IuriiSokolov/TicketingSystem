@@ -5,7 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
+using System;
 using Testcontainers.PostgreSql;
+using Testcontainers.Redis;
 using TicketingSystem.Common.Context;
 using TicketingSystem.MigrationService;
 
@@ -20,13 +23,12 @@ namespace TicketingSystem.Tests.Integration
                 .WithPassword("postgres")
                 .Build();
 
+        private readonly RedisContainer _redisContainer = new RedisBuilder()
+            .WithImage("redis:latest")
+            .Build();
+
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            builder.ConfigureAppConfiguration(configure =>
-            {
-                //configure.Add(new PostgresConfigSource());
-            });
-
             builder.ConfigureTestServices(services =>
             {
                 var descriptor = services.SingleOrDefault(s => s.ServiceType == typeof(DbContextOptions<TicketingDbContext>));
@@ -42,12 +44,18 @@ namespace TicketingSystem.Tests.Integration
                         sqlOptions.ExecutionStrategy(c => new RetryingSqlServerRetryingExecutionStrategy(c));
                     });
                 }, ServiceLifetime.Singleton);
+
+                descriptor = services.SingleOrDefault(s => s.ServiceType == typeof(IConnectionMultiplexer));
+                if (descriptor is not null)
+                    services.Remove(descriptor);
+                services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(_redisContainer.GetConnectionString()));
             });
         }
 
         public async Task InitializeAsync()
         {
             await _dbContainer.StartAsync();
+            await _redisContainer.StartAsync();
             using var scope = Services.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<TicketingDbContext>();
 
@@ -59,43 +67,10 @@ namespace TicketingSystem.Tests.Integration
                 }
             }
         }
-        public new Task DisposeAsync()
+        public new async Task DisposeAsync()
         {
-            return _dbContainer.StopAsync();
+            await _redisContainer.DisposeAsync();
+            await _dbContainer.DisposeAsync();
         }
     }
-
-    //public class PostgresConfigSource : IConfigurationSource
-    //{
-    //    public IConfigurationProvider Build(IConfigurationBuilder builder) =>
-    //        new PostgresConfigProvider();
-    //}
-
-    //public class PostgresConfigProvider : ConfigurationProvider
-    //{
-    //    private static readonly TaskFactory TaskFactory = new TaskFactory(CancellationToken.None, TaskCreationOptions.None, TaskContinuationOptions.None, TaskScheduler.Default);
-
-    //    public override void Load()
-    //    {
-    //        TaskFactory.StartNew(LoadAsync)
-    //            .Unwrap()
-    //            .ConfigureAwait(false)
-    //            .GetAwaiter()
-    //            .GetResult();
-    //    }
-
-    //    public async Task LoadAsync()
-    //    {
-    //        var postgresContainer = new PostgreSqlBuilder()
-    //            .WithImage("postgres:latest")
-    //            .WithDatabase("TicketingDB")
-    //            .WithUsername("postgres")
-    //            .WithPassword("1234567890")
-    //            .WithPortBinding(5555, 5432)
-    //            .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(5432))
-    //            .Build();
-    //        await postgresContainer.StartAsync().ConfigureAwait(false);
-    //        Set("ConnectionStrings:TicketingDB", postgresContainer.GetConnectionString());
-    //    }
-    //}
 }
