@@ -6,7 +6,7 @@ namespace TicketingSystem.ApiService.Repositories.TickerRepository
 {
     public interface ITicketRepository : IRepositoryBase<Ticket>
     {
-        Task<Ticket?> FirstOrDefaultAsync(Expression<Func<Ticket, bool>> predicate);
+        Task<Ticket?> FirstOrDefaultAsync(Expression<Func<Ticket, bool>> predicate, params Expression<Func<Ticket, object>>[] includes);
         Task<List<Ticket>> GetWhereAsync(Expression<Func<Ticket, bool>> predicate, params Expression<Func<Ticket, object>>[] includes);
     }
 }

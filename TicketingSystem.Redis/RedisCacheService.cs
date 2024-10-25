@@ -1,6 +1,4 @@
 ﻿using StackExchange.Redis;
-using System;
-using System.Linq.Expressions;
 using System.Text.Json;
 
 namespace TicketingSystem.Redis
@@ -33,18 +31,6 @@ namespace TicketingSystem.Redis
         public async Task SaveAsync<T>(string key, T value, TimeSpan expiry) where T : class
         {
             await _database.StringSetAsync(key, JsonSerializer.Serialize(value, jsonSerializerOptions), expiry);
-        }
-
-        public async Task<T> GetSaveAsync<T>(Func<Task<T>> value, string key, TimeSpan? expiry = null) where T : class
-        {
-            expiry ??= TimeSpan.FromSeconds(5);
-            var result = await GetAsync<T>(key);
-            if (result is null)
-            {
-                result = await value();
-                await SaveAsync(key, result, expiry.Value);
-            }
-            return result;
         }
     }
 }

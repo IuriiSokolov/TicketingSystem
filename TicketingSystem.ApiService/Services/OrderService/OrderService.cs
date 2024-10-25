@@ -1,10 +1,13 @@
 ﻿using TicketingSystem.ApiService.Repositories.CartRepository;
 using TicketingSystem.ApiService.Repositories.PaymentRepository;
 using TicketingSystem.ApiService.Repositories.PriceCategoryRepository;
+using TicketingSystem.ApiService.Repositories.SeatRepository;
 using TicketingSystem.ApiService.Repositories.TickerRepository;
 using TicketingSystem.Common.Model.Database.Entities;
 using TicketingSystem.Common.Model.Database.Enums;
 using TicketingSystem.Common.Model.DTOs.Output;
+using TicketingSystem.Redis;
+using static System.Collections.Specialized.BitVector32;
 
 namespace TicketingSystem.ApiService.Services.OrderService
 {
@@ -13,17 +16,23 @@ namespace TicketingSystem.ApiService.Services.OrderService
         private readonly ICartRepository _cartRepository;
         private readonly IPriceCategoryRepository _priceCategoryRepository;
         private readonly ITicketRepository _ticketRepository;
+        private readonly ISeatRepository _seatRepository;
         private readonly IPaymentRepository _paymentRepository;
+        private readonly IRedisCacheService _cache;
 
         public OrderService(ICartRepository cartRepository,
             IPriceCategoryRepository priceCategoryRepository,
             ITicketRepository ticketRepository,
-            IPaymentRepository paymentRepository)
+            IPaymentRepository paymentRepository,
+            IRedisCacheService cache,
+            ISeatRepository seatRepository)
         {
             _cartRepository = cartRepository;
             _priceCategoryRepository = priceCategoryRepository;
             _ticketRepository = ticketRepository;
             _paymentRepository = paymentRepository;
+            _cache = cache;
+            _seatRepository = seatRepository;
         }
 
         public async Task<List<TicketDto>> GetTicketsInCartAsync(Guid cartId)
@@ -40,11 +49,14 @@ namespace TicketingSystem.ApiService.Services.OrderService
                 return (null, "Cart not found");
             var ticket = await _ticketRepository.FirstOrDefaultAsync(ticket => ticket.EventId == eventId
                 && ticket.SeatId == seatId
-                && ticket.Status == TicketStatus.Free);
+                && ticket.Status == TicketStatus.Free,
+                x => x.Seat!);
             if (ticket == null)
                 return (null, "Ticket not found");
             ticket.CartId = cartId;
             await _ticketRepository.UpdateAsync(ticket);
+            
+            await _cache.DeleteAsync($"api/events/{eventId}/sections/{ticket.Seat!.SectionId}/seats");
 
             var categories = await _priceCategoryRepository.GetWhereAsync(pc => pc.EventId == eventId);
             var totalPriceUsd = cart.Tickets.Sum(ticket => categories.Single(pc => pc.PriceCategoryId == ticket.PriceCategoryId).PriceUsd);
