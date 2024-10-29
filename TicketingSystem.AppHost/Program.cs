@@ -8,7 +8,8 @@ var postgresql = builder.AddPostgres("postgresql", port: 54030)
 var postgresdb = postgresql.AddDatabase("TicketingDB");
 
 var apiService = builder.AddProject<Projects.TicketingSystem_ApiService>("apiservice")
-    .WithReference(postgresdb);
+    .WithReference(postgresdb)
+    .WithReference(cache);
 
 builder.AddProject<Projects.TicketingSystem_MigrationService>("migration")
        .WithReference(postgresdb);

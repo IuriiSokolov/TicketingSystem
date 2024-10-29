@@ -8,9 +8,14 @@ namespace TicketingSystem.ApiService.Repositories.TickerRepository
 {
     public class TicketRepository(TicketingDbContext context) : RepositoryBase<Ticket>(context), ITicketRepository
     {
-        public async Task<Ticket?> FirstOrDefaultAsync(Expression<Func<Ticket, bool>> predicate)
+        public async Task<Ticket?> FirstOrDefaultAsync(Expression<Func<Ticket, bool>> predicate, params Expression<Func<Ticket, object>>[] includes)
         {
-            return await Context.Tickets.FirstOrDefaultAsync(predicate);
+            IQueryable<Ticket> queriable = Context.Tickets;
+            for (int i = 0; i < includes.Length; i++)
+            {
+                queriable = queriable.Include(includes[i]);
+            }
+            return await queriable.FirstOrDefaultAsync(predicate);
         }
 
         public async Task<List<Ticket>> GetWhereAsync(Expression<Func<Ticket, bool>> predicate, params Expression<Func<Ticket, object>>[] includes)
