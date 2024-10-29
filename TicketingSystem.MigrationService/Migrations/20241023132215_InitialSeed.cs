@@ -13,6 +13,8 @@ namespace TicketingSystem.MigrationService.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            if (Environment.GetEnvironmentVariable("IntegrationTests") == "true")
+                return;
             migrationBuilder.InsertData(
                 table: "Payments",
                 columns: new[] { "PaymentId", "CartId", "PaymentStatus", "PaymentTime" },

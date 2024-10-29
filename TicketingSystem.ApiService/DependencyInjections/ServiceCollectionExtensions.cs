@@ -11,6 +11,7 @@ using TicketingSystem.ApiService.Services.EventService;
 using TicketingSystem.ApiService.Services.VenueService;
 using TicketingSystem.ApiService.Services.PaymentService;
 using TicketingSystem.ApiService.Services.OrderService;
+using TicketingSystem.ApiService.Repositories.UnitOfWork;
 
 namespace TicketingSystem.ApiService.DependencyInjections
 {
@@ -27,6 +28,7 @@ namespace TicketingSystem.ApiService.DependencyInjections
             services.AddScoped<IPersonRepository, PersonRepository>();
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<ICartRepository, CartRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddScoped<IEventService, EventService>();
             services.AddScoped<IVenueService, VenueService>();

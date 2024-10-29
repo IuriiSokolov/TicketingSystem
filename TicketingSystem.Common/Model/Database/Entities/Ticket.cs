@@ -1,4 +1,5 @@
-﻿using TicketingSystem.Common.Model.Database.Enums;
+﻿using System.ComponentModel.DataAnnotations;
+using TicketingSystem.Common.Model.Database.Enums;
 
 namespace TicketingSystem.Common.Model.Database.Entities
 {
@@ -22,5 +23,7 @@ namespace TicketingSystem.Common.Model.Database.Entities
 
         public Guid? CartId { get; set; }
         public Cart? Cart { get; set; }
+
+        public byte[] Version { get; set; }
     }
 }

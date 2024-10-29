@@ -14,14 +14,12 @@ namespace TicketingSystem.Tests.EndpointTests
     public class EventEndpointsTests
     {
         private readonly Mock<IEventService> _mockEventService;
-        private readonly Mock<IRedisCacheService> _mockCache;
         private readonly Mock<HttpContext> _mockHttpContext;
         private readonly EventEndpoints _endpoints;
 
         public EventEndpointsTests()
         {
             _mockEventService = new Mock<IEventService>();
-            _mockCache = new Mock<IRedisCacheService>();
             _mockHttpContext = new Mock<HttpContext>();
             _mockHttpContext.Setup(x => x.Response.Headers).Returns(new HeaderDictionary());
             _endpoints = new EventEndpoints();
@@ -62,7 +60,6 @@ namespace TicketingSystem.Tests.EndpointTests
                 eventId,
                 sectionId,
                 _mockEventService.Object,
-                _mockCache.Object,
                 _mockHttpContext.Object
             ])!;
 
