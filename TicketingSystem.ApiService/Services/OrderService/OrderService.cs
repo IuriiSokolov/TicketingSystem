@@ -1,4 +1,5 @@
-﻿using TicketingSystem.ApiService.Repositories.CartRepository;
+﻿using TicketingSystem.ApiService.Cache;
+using TicketingSystem.ApiService.Repositories.CartRepository;
 using TicketingSystem.ApiService.Repositories.PaymentRepository;
 using TicketingSystem.ApiService.Repositories.PriceCategoryRepository;
 using TicketingSystem.ApiService.Repositories.SeatRepository;
@@ -7,7 +8,6 @@ using TicketingSystem.Common.Model.Database.Entities;
 using TicketingSystem.Common.Model.Database.Enums;
 using TicketingSystem.Common.Model.DTOs.Output;
 using TicketingSystem.Redis;
-using static System.Collections.Specialized.BitVector32;
 
 namespace TicketingSystem.ApiService.Services.OrderService
 {
@@ -56,7 +56,7 @@ namespace TicketingSystem.ApiService.Services.OrderService
             ticket.CartId = cartId;
             await _ticketRepository.UpdateAsync(ticket);
             
-            await _cache.DeleteAsync($"api/events/{eventId}/sections/{ticket.Seat!.SectionId}/seats");
+            await _cache.DeleteAsync(CacheKeys.GetSeatsOfSectionOfEvent(eventId, ticket.Seat!.SectionId!.Value));
 
             var categories = await _priceCategoryRepository.GetWhereAsync(pc => pc.EventId == eventId);
             var totalPriceUsd = cart.Tickets.Sum(ticket => categories.Single(pc => pc.PriceCategoryId == ticket.PriceCategoryId).PriceUsd);

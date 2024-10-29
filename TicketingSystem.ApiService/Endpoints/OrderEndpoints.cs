@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.OutputCaching;
-using Microsoft.Extensions.Logging;
+using TicketingSystem.ApiService.Cache;
 using TicketingSystem.ApiService.Services.OrderService;
 using TicketingSystem.Common.Model.DTOs.Input;
 using TicketingSystem.Common.Model.DTOs.Output;
-using TicketingSystem.Redis;
 
 namespace TicketingSystem.ApiService.Endpoints
 {
@@ -28,7 +27,7 @@ namespace TicketingSystem.ApiService.Endpoints
         private async Task<Results<Ok<CartDto>, NotFound<string>>> AddTicketToCart(Guid cart_id, AddTicketToCartDto dto, IOrderService service, IOutputCacheStore cacheStore)
         {
             var (resultDto, errorMsg) = await service.AddTicketToCartAsync(cart_id, dto.EventId, dto.SeatId);
-            await cacheStore.EvictByTagAsync("GetEvents", default);
+            await cacheStore.EvictByTagAsync(CacheTags.GetEvents, default);
             return resultDto is null
                 ? TypedResults.NotFound(errorMsg)
                 : TypedResults.Ok(resultDto.Value);

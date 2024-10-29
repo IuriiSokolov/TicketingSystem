@@ -5,11 +5,6 @@ using TicketingSystem.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddNpgsqlDbContext<TicketingDbContext>("TicketingDB");
-builder.Services.AddOutputCache(options =>
-{
-    options.AddPolicy("Expire20", builder =>
-        builder.Expire(TimeSpan.FromHours(1)));
-});
 builder.AddRedisOutputCache("cache");
 
 // Add service defaults & Aspire components.
