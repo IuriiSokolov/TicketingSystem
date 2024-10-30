@@ -12,8 +12,8 @@ using TicketingSystem.Common.Context;
 namespace TicketingSystem.MigrationService.Migrations
 {
     [DbContext(typeof(TicketingDbContext))]
-    [Migration("20241029115323_AddingConcurrencyTokenToTicket")]
-    partial class AddingConcurrencyTokenToTicket
+    [Migration("20241030112204_InitialSeed")]
+    partial class InitialSeed
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -52,14 +52,14 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasData(
                         new
                         {
-                            CartId = new Guid("909cb449-64ce-4a93-84ca-49821afa3773"),
+                            CartId = new Guid("a29e759f-172b-4390-b1fb-a5956e60d04b"),
                             CartStatus = 1,
                             PaymentId = 1,
                             PersonId = 1
                         },
                         new
                         {
-                            CartId = new Guid("d221fe6d-e676-4d22-9920-a9436f79816b"),
+                            CartId = new Guid("892c9499-7738-436a-b233-ed55bc6e40e6"),
                             CartStatus = 0,
                             PersonId = 1
                         });
@@ -241,7 +241,7 @@ namespace TicketingSystem.MigrationService.Migrations
                         new
                         {
                             PaymentId = 1,
-                            CartId = new Guid("909cb449-64ce-4a93-84ca-49821afa3773"),
+                            CartId = new Guid("a29e759f-172b-4390-b1fb-a5956e60d04b"),
                             PaymentStatus = 1,
                             PaymentTime = new DateTime(2024, 11, 30, 19, 0, 0, 0, DateTimeKind.Utc)
                         });
@@ -426,11 +426,11 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<byte[]>("Version")
+                    b.Property<uint>("Version")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("TicketId");
 
@@ -450,7 +450,7 @@ namespace TicketingSystem.MigrationService.Migrations
                         new
                         {
                             TicketId = 1,
-                            CartId = new Guid("909cb449-64ce-4a93-84ca-49821afa3773"),
+                            CartId = new Guid("a29e759f-172b-4390-b1fb-a5956e60d04b"),
                             EventId = 1,
                             PersonId = 1,
                             PriceCategoryId = 1,

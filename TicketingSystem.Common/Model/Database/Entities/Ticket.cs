@@ -23,7 +23,5 @@ namespace TicketingSystem.Common.Model.Database.Entities
 
         public Guid? CartId { get; set; }
         public Cart? Cart { get; set; }
-
-        public byte[] Version { get; set; }
     }
 }

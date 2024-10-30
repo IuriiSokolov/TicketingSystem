@@ -56,8 +56,8 @@ namespace TicketingSystem.Tests.Integration.EndpointTests
         public async Task AddTicketToCartNTimesTest()
         {
             // Arrange
-            const int taskNum = 10;
-            const int ids = 1;
+            const int taskNum = 100;
+            int ids = new Random(Environment.TickCount).Next();
             await Init(ids);
             var (carts, ticket) = await InitCartsAndTickets(taskNum, ids);
             var inputDto = new AddTicketToCartDto
@@ -76,14 +76,6 @@ namespace TicketingSystem.Tests.Integration.EndpointTests
 
             // Act
             results = await Task.WhenAll(tasks);
-
-            //var opts = new ParallelOptions
-            //{
-            //    MaxDegreeOfParallelism = taskNum
-            //};
-
-            //// Act
-            //await Parallel.ForAsync(0, taskNum, opts, async (i, token) => results[i] = await _client.PostAsJsonAsync($"api/orders/carts/{carts[i].CartId}", inputDto, cancellationToken: token));
 
             // Assert
             CartDto?[] resultDtos = new CartDto?[taskNum];

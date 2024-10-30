@@ -9,6 +9,7 @@ namespace TicketingSystem.ApiService.Repositories.UnitOfWork
     {
         private readonly TicketingDbContext _dbContext;
         private readonly ILogger<UnitOfWork> _logger;
+
         public UnitOfWork(TicketingDbContext dbContext, ILogger<UnitOfWork> logger)
         {
             _dbContext = dbContext;
@@ -39,8 +40,9 @@ namespace TicketingSystem.ApiService.Repositories.UnitOfWork
             catch (Exception ex)
             {
                 transaction.Rollback();
-                _logger.LogError(ex.Message);
-                return (default!, $"Error during the transaction execution. {ex.Message}");
+                var errorMsg = $"Error during the transaction execution. {ex.Message}";
+                _logger.LogError(errorMsg);
+                return (default!, errorMsg);
             }
         }
     }

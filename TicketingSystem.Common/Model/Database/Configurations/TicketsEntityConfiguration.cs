@@ -8,7 +8,7 @@ namespace TicketingSystem.Common.Model.Database.Configurations
         public void Configure(EntityTypeBuilder<Ticket> builder)
         {
             builder.HasKey(x => x.TicketId);
-            builder.Property(x => x.Version)
+            builder.Property<uint>("Version")
                 .IsRowVersion();
         }
     }
