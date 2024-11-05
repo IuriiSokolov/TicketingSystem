@@ -55,9 +55,9 @@ namespace TicketingSystem.ApiService.Services.OrderService
                 async () => await AddTicketToCartPlainAsync(cartId, eventId, seatId), System.Data.IsolationLevel.RepeatableRead);
             var errorMsg = exceptionMsg ?? result.ErrorMsg;
             if (errorMsg == null)
-                _logger.LogInformation($"Ticket added to the cart {cartId} successfully");
+                _logger.LogInformation("Ticket added to the cart {cartId} successfully", cartId);
             else
-                _logger.LogWarning($"Error while adding the ticket to the cart {cartId}. Message: {errorMsg}");
+                _logger.LogWarning("Error while adding the ticket to the cart {cartId}. Message: {errorMsg}", cartId, errorMsg);
             return (result.Dto, errorMsg);
         }
 
