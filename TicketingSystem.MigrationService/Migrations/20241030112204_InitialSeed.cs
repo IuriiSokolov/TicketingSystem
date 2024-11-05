@@ -13,10 +13,12 @@ namespace TicketingSystem.MigrationService.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            if (Environment.GetEnvironmentVariable("IntegrationTests") == "true")
+                return;
             migrationBuilder.InsertData(
                 table: "Payments",
                 columns: new[] { "PaymentId", "CartId", "PaymentStatus", "PaymentTime" },
-                values: new object[] { 1, new Guid("83c90a1e-08f4-4d0a-bce9-1b1b51a95401"), 1, new DateTime(2024, 11, 30, 19, 0, 0, 0, DateTimeKind.Utc) });
+                values: new object[] { 1, new Guid("a29e759f-172b-4390-b1fb-a5956e60d04b"), 1, new DateTime(2024, 11, 30, 19, 0, 0, 0, DateTimeKind.Utc) });
 
             migrationBuilder.InsertData(
                 table: "Persons",
@@ -33,8 +35,8 @@ namespace TicketingSystem.MigrationService.Migrations
                 columns: new[] { "CartId", "CartStatus", "PaymentId", "PersonId" },
                 values: new object[,]
                 {
-                    { new Guid("046ca055-2b7c-4e07-b610-5d8815f325c7"), 0, null, 1 },
-                    { new Guid("83c90a1e-08f4-4d0a-bce9-1b1b51a95401"), 1, 1, 1 }
+                    { new Guid("892c9499-7738-436a-b233-ed55bc6e40e6"), 0, null, 1 },
+                    { new Guid("a29e759f-172b-4390-b1fb-a5956e60d04b"), 1, 1, 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -71,7 +73,7 @@ namespace TicketingSystem.MigrationService.Migrations
                 columns: new[] { "TicketId", "CartId", "EventId", "PersonId", "PriceCategoryId", "SeatId", "Status" },
                 values: new object[,]
                 {
-                    { 1, new Guid("83c90a1e-08f4-4d0a-bce9-1b1b51a95401"), 1, 1, 1, 1, 2 },
+                    { 1, new Guid("a29e759f-172b-4390-b1fb-a5956e60d04b"), 1, 1, 1, 1, 2 },
                     { 2, null, 1, null, 1, 2, 0 },
                     { 3, null, 1, null, 2, 3, 0 }
                 });
@@ -83,7 +85,7 @@ namespace TicketingSystem.MigrationService.Migrations
             migrationBuilder.DeleteData(
                 table: "Carts",
                 keyColumn: "CartId",
-                keyValue: new Guid("046ca055-2b7c-4e07-b610-5d8815f325c7"));
+                keyValue: new Guid("892c9499-7738-436a-b233-ed55bc6e40e6"));
 
             migrationBuilder.DeleteData(
                 table: "Tickets",
@@ -103,7 +105,7 @@ namespace TicketingSystem.MigrationService.Migrations
             migrationBuilder.DeleteData(
                 table: "Carts",
                 keyColumn: "CartId",
-                keyValue: new Guid("83c90a1e-08f4-4d0a-bce9-1b1b51a95401"));
+                keyValue: new Guid("a29e759f-172b-4390-b1fb-a5956e60d04b"));
 
             migrationBuilder.DeleteData(
                 table: "PriceCategories",

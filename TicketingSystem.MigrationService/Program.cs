@@ -18,7 +18,7 @@ builder.Services.AddDbContextPool<TicketingDbContext>(options =>
     {
         sqlOptions.MigrationsAssembly("TicketingSystem.MigrationService");
         // Workaround for https://github.com/dotnet/aspire/issues/1023
-        sqlOptions.ExecutionStrategy(c => new RetryingSqlServerRetryingExecutionStrategy(c));
+        //sqlOptions.ExecutionStrategy(c => new RetryingSqlServerRetryingExecutionStrategy(c));
     }));
 
 var app = builder.Build();

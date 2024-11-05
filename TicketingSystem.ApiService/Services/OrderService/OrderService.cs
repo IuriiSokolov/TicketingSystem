@@ -4,6 +4,7 @@ using TicketingSystem.ApiService.Repositories.PaymentRepository;
 using TicketingSystem.ApiService.Repositories.PriceCategoryRepository;
 using TicketingSystem.ApiService.Repositories.SeatRepository;
 using TicketingSystem.ApiService.Repositories.TickerRepository;
+using TicketingSystem.ApiService.Repositories.UnitOfWork;
 using TicketingSystem.Common.Model.Database.Entities;
 using TicketingSystem.Common.Model.Database.Enums;
 using TicketingSystem.Common.Model.DTOs.Output;
@@ -19,13 +20,17 @@ namespace TicketingSystem.ApiService.Services.OrderService
         private readonly ISeatRepository _seatRepository;
         private readonly IPaymentRepository _paymentRepository;
         private readonly IRedisCacheService _cache;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<OrderService> _logger;
 
         public OrderService(ICartRepository cartRepository,
             IPriceCategoryRepository priceCategoryRepository,
             ITicketRepository ticketRepository,
             IPaymentRepository paymentRepository,
             IRedisCacheService cache,
-            ISeatRepository seatRepository)
+            ISeatRepository seatRepository,
+            IUnitOfWork unitOfWork,
+            ILogger<OrderService> logger)
         {
             _cartRepository = cartRepository;
             _priceCategoryRepository = priceCategoryRepository;
@@ -33,6 +38,8 @@ namespace TicketingSystem.ApiService.Services.OrderService
             _paymentRepository = paymentRepository;
             _cache = cache;
             _seatRepository = seatRepository;
+            _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
         public async Task<List<TicketDto>> GetTicketsInCartAsync(Guid cartId)
@@ -42,20 +49,33 @@ namespace TicketingSystem.ApiService.Services.OrderService
             return dtos;
         }
 
-        public async Task<(CartDto?, string? ErrorMsg)> AddTicketToCartAsync(Guid cartId, int eventId, int seatId)
+        public async Task<(CartDto? Dto, string? ErrorMsg)> AddTicketToCartAsync(Guid cartId, int eventId, int seatId)
+        {
+            var (result, exceptionMsg) = await _unitOfWork.DoInTransaction<(CartDto? Dto, string? ErrorMsg)>(
+                async () => await AddTicketToCartPlainAsync(cartId, eventId, seatId), System.Data.IsolationLevel.RepeatableRead);
+            var errorMsg = exceptionMsg ?? result.ErrorMsg;
+            if (errorMsg == null)
+                _logger.LogInformation("Ticket added to the cart {cartId} successfully", cartId);
+            else
+                _logger.LogWarning("Error while adding the ticket to the cart {cartId}. Message: {errorMsg}", cartId, errorMsg);
+            return (result.Dto, errorMsg);
+        }
+
+        private async Task<(CartDto? Dto, string? ErrorMsg)> AddTicketToCartPlainAsync(Guid cartId, int eventId, int seatId)
         {
             var cart = await _cartRepository.FirstOrDefaultWithTicketsAsync(cart => cart.CartId == cartId);
             if (cart == null || cart.CartStatus == CartStatus.Paid)
                 return (null, "Cart not found");
             var ticket = await _ticketRepository.FirstOrDefaultAsync(ticket => ticket.EventId == eventId
                 && ticket.SeatId == seatId
-                && ticket.Status == TicketStatus.Free,
+                && ticket.Status == TicketStatus.Free
+                && ticket.CartId == null,
                 x => x.Seat!);
             if (ticket == null)
                 return (null, "Ticket not found");
             ticket.CartId = cartId;
             await _ticketRepository.UpdateAsync(ticket);
-            
+
             await _cache.DeleteAsync(CacheKeys.GetSeatsOfSectionOfEvent(eventId, ticket.Seat!.SectionId!.Value));
 
             var categories = await _priceCategoryRepository.GetWhereAsync(pc => pc.EventId == eventId);

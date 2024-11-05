@@ -1,3 +1,4 @@
+using Serilog;
 using System.Reflection;
 using TicketingSystem.ApiService.DependencyInjections;
 using TicketingSystem.Common.Context;
@@ -18,9 +19,16 @@ builder.Services.AddProblemDetails();
 builder.Services.AddRepositories();
 builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
 
+builder.Host.UseSerilog((context, configuration) =>
+{
+    configuration.ReadFrom.Configuration(context.Configuration);
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+
+app.UseSerilogRequestLogging();
 app.UseOutputCache();
 app.UseExceptionHandler();
 if (app.Environment.IsDevelopment())

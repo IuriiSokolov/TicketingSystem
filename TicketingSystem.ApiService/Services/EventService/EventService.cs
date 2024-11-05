@@ -11,11 +11,14 @@ namespace TicketingSystem.ApiService.Services.EventService
         private readonly IEventRepository _eventRepository;
         private readonly ITicketRepository _ticketRepository;
         private readonly IRedisCacheService _cache;
-        public EventService(IEventRepository eventRepository, ITicketRepository ticketRepository, IRedisCacheService cache)
+        private readonly ILogger<EventService> _logger;
+
+        public EventService(IEventRepository eventRepository, ITicketRepository ticketRepository, IRedisCacheService cache, ILogger<EventService> logger)
         {
             _eventRepository = eventRepository;
             _ticketRepository = ticketRepository;
             _cache = cache;
+            _logger = logger;
         }
 
         public async Task<List<TicketsFromEventAndSectionDto>> GetTicketsOfSectionOfEventAsync(int eventId, int sectionId)
@@ -28,6 +31,7 @@ namespace TicketingSystem.ApiService.Services.EventService
         {
             var events = await _eventRepository.GetAllAsync();
             var dtos = events.Select(e => new EventDto(e)).ToList();
+            _logger.LogInformation("Events: {@events}", events);
             return dtos;
         }
 

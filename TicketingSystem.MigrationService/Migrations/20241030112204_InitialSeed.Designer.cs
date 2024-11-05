@@ -12,8 +12,8 @@ using TicketingSystem.Common.Context;
 namespace TicketingSystem.MigrationService.Migrations
 {
     [DbContext(typeof(TicketingDbContext))]
-    [Migration("20241023132159_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241030112204_InitialSeed")]
+    partial class InitialSeed
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,6 +48,21 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasIndex("PersonId");
 
                     b.ToTable("Carts");
+
+                    b.HasData(
+                        new
+                        {
+                            CartId = new Guid("a29e759f-172b-4390-b1fb-a5956e60d04b"),
+                            CartStatus = 1,
+                            PaymentId = 1,
+                            PersonId = 1
+                        },
+                        new
+                        {
+                            CartId = new Guid("892c9499-7738-436a-b233-ed55bc6e40e6"),
+                            CartStatus = 0,
+                            PersonId = 1
+                        });
                 });
 
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.EnumEntities.CartStatusRow", b =>
@@ -190,6 +205,15 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasIndex("VenueId");
 
                     b.ToTable("Events");
+
+                    b.HasData(
+                        new
+                        {
+                            EventId = 1,
+                            Date = new DateTime(2024, 12, 30, 19, 0, 0, 0, DateTimeKind.Utc),
+                            Name = "Новогодний спектакль",
+                            VenueId = 1
+                        });
                 });
 
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Payment", b =>
@@ -212,6 +236,15 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasKey("PaymentId");
 
                     b.ToTable("Payments");
+
+                    b.HasData(
+                        new
+                        {
+                            PaymentId = 1,
+                            CartId = new Guid("a29e759f-172b-4390-b1fb-a5956e60d04b"),
+                            PaymentStatus = 1,
+                            PaymentTime = new DateTime(2024, 11, 30, 19, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Person", b =>
@@ -233,6 +266,14 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasKey("PersonId");
 
                     b.ToTable("Persons");
+
+                    b.HasData(
+                        new
+                        {
+                            PersonId = 1,
+                            ContactInfo = "testContact",
+                            Name = "Юрий"
+                        });
                 });
 
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.PriceCategory", b =>
@@ -261,6 +302,22 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasIndex("EventId");
 
                     b.ToTable("PriceCategories");
+
+                    b.HasData(
+                        new
+                        {
+                            PriceCategoryId = 1,
+                            EventId = 1,
+                            PriceCategoryName = "Normal seat",
+                            PriceUsd = 10f
+                        },
+                        new
+                        {
+                            PriceCategoryId = 2,
+                            EventId = 1,
+                            PriceCategoryName = "VIP seat",
+                            PriceUsd = 15f
+                        });
                 });
 
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Seat", b =>
@@ -290,6 +347,32 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasIndex("SectionId");
 
                     b.ToTable("Seats");
+
+                    b.HasData(
+                        new
+                        {
+                            SeatId = 1,
+                            EventId = 1,
+                            RowNumber = 1,
+                            SeatType = 0,
+                            SectionId = 1
+                        },
+                        new
+                        {
+                            SeatId = 2,
+                            EventId = 1,
+                            RowNumber = 2,
+                            SeatType = 1,
+                            SectionId = 1
+                        },
+                        new
+                        {
+                            SeatId = 3,
+                            EventId = 1,
+                            RowNumber = 3,
+                            SeatType = 0,
+                            SectionId = 1
+                        });
                 });
 
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Section", b =>
@@ -308,6 +391,13 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasIndex("VenueId");
 
                     b.ToTable("Sections");
+
+                    b.HasData(
+                        new
+                        {
+                            SectionId = 1,
+                            VenueId = 1
+                        });
                 });
 
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Ticket", b =>
@@ -336,6 +426,12 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("TicketId");
 
                     b.HasIndex("CartId");
@@ -349,6 +445,34 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasIndex("SeatId");
 
                     b.ToTable("Tickets");
+
+                    b.HasData(
+                        new
+                        {
+                            TicketId = 1,
+                            CartId = new Guid("a29e759f-172b-4390-b1fb-a5956e60d04b"),
+                            EventId = 1,
+                            PersonId = 1,
+                            PriceCategoryId = 1,
+                            SeatId = 1,
+                            Status = 2
+                        },
+                        new
+                        {
+                            TicketId = 2,
+                            EventId = 1,
+                            PriceCategoryId = 1,
+                            SeatId = 2,
+                            Status = 0
+                        },
+                        new
+                        {
+                            TicketId = 3,
+                            EventId = 1,
+                            PriceCategoryId = 2,
+                            SeatId = 3,
+                            Status = 0
+                        });
                 });
 
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Venue", b =>
@@ -373,6 +497,14 @@ namespace TicketingSystem.MigrationService.Migrations
                     b.HasKey("VenueId");
 
                     b.ToTable("Venues");
+
+                    b.HasData(
+                        new
+                        {
+                            VenueId = 1,
+                            Address = "ул. Зарафшан, 28",
+                            Name = "Большой театр Навои"
+                        });
                 });
 
             modelBuilder.Entity("TicketingSystem.Common.Model.Database.Entities.Cart", b =>

@@ -1,4 +1,5 @@
-﻿using TicketingSystem.Common.Model.Database.Enums;
+﻿using System.ComponentModel.DataAnnotations;
+using TicketingSystem.Common.Model.Database.Enums;
 
 namespace TicketingSystem.Common.Model.Database.Entities
 {

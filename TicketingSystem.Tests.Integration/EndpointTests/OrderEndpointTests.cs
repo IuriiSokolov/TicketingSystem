@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Json;
 using TicketingSystem.Common.Context;
@@ -52,6 +53,46 @@ namespace TicketingSystem.Tests.Integration.EndpointTests
         }
 
         [Fact]
+        public async Task AddTicketToCartNTimesTest()
+        {
+            // Arrange
+            const int taskNum = 100;
+            int ids = new Random(Environment.TickCount).Next();
+            await Init(ids);
+            var (carts, ticket) = await InitCartsAndTickets(taskNum, ids);
+            var inputDto = new AddTicketToCartDto
+            {
+                EventId = ticket.EventId,
+                SeatId = ticket.SeatId,
+            };
+
+            var results = new HttpResponseMessage[taskNum];
+
+            var tasks = new Task<HttpResponseMessage>[taskNum];
+            for (int i = 0; i < taskNum; i++)
+            {
+                tasks[i] = _client.PostAsJsonAsync($"api/orders/carts/{carts[i].CartId}", inputDto);
+            }
+
+            // Act
+            results = await Task.WhenAll(tasks);
+
+            // Assert
+            CartDto?[] resultDtos = new CartDto?[taskNum];
+            int j = 0;
+            int successfulRequests = 0;
+            foreach (var result in results)
+            {
+                if (result.IsSuccessStatusCode)
+                {
+                    successfulRequests++;
+                    resultDtos[j++] = await result.Content.ReadFromJsonAsync<CartDto>();
+                }
+            }
+            successfulRequests.Should().Be(1);
+        }
+
+        [Fact]
         public async Task RemoveTicketFromCartTest()
         {
             // Arrange
@@ -89,6 +130,40 @@ namespace TicketingSystem.Tests.Integration.EndpointTests
             resultPaymentDto.Should().BeEquivalentTo(expectedPaymentDto);
         }
 
+
+        private async Task<(Cart[], Ticket)> InitCartsAndTickets(int cartNum, int ids, bool ticketInCart = false)
+        {
+            var carts = new Cart[cartNum];
+            for (int i = 0; i < cartNum; i++)
+            {
+
+                var cartId = Guid.NewGuid();
+                var cart = new Cart
+                {
+                    CartId = cartId,
+                    PersonId = ids,
+                    CartStatus = Common.Model.Database.Enums.CartStatus.NotPaid,
+                };
+                carts[i] = cart;
+                await _context.Carts.AddAsync(cart);
+            }
+
+            var ticket = new Ticket
+            {
+                TicketId = ids,
+                EventId = ids,
+                PriceCategoryId = ids,
+                SeatId = ids,
+                Status = Common.Model.Database.Enums.TicketStatus.Free,
+                CartId = null
+            };
+
+            await _context.Tickets.AddAsync(ticket);
+
+            await _context.SaveChangesAsync();
+            return (carts, ticket);
+        }
+
         private async Task<(Cart, Ticket)> InitCartAndTicket(int ids, bool ticketInCart = false)
         {
             var cartId = Guid.NewGuid();
@@ -102,6 +177,7 @@ namespace TicketingSystem.Tests.Integration.EndpointTests
 
             var ticket = new Ticket
             {
+                TicketId = ids,
                 EventId = ids,
                 PriceCategoryId = ids,
                 SeatId = ids,
@@ -116,6 +192,7 @@ namespace TicketingSystem.Tests.Integration.EndpointTests
 
         private async Task Init(int ids)
         {
+            var wtf = _context.Persons;
             var person = new Person
             {
                 PersonId = ids,

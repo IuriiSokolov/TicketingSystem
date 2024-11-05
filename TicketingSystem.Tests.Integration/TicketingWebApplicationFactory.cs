@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
-using System;
 using Testcontainers.PostgreSql;
 using Testcontainers.Redis;
 using TicketingSystem.Common.Context;
@@ -29,6 +28,7 @@ namespace TicketingSystem.Tests.Integration
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
+            Environment.SetEnvironmentVariable("IntegrationTests", "true");
             builder.ConfigureTestServices(services =>
             {
                 var descriptor = services.SingleOrDefault(s => s.ServiceType == typeof(DbContextOptions<TicketingDbContext>));
@@ -58,14 +58,7 @@ namespace TicketingSystem.Tests.Integration
             await _redisContainer.StartAsync();
             using var scope = Services.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<TicketingDbContext>();
-
-            foreach (var migration in dbContext.Database.GetPendingMigrations())
-            {
-                if (!migration.Contains("Seed"))
-                {
-                    await dbContext.GetService<IMigrator>().MigrateAsync(migration);
-                }
-            }
+            dbContext.Database.Migrate();
         }
         public new async Task DisposeAsync()
         {

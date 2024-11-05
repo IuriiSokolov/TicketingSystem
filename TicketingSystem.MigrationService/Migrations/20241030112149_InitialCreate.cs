@@ -232,7 +232,8 @@ namespace TicketingSystem.MigrationService.Migrations
                     SeatId = table.Column<int>(type: "integer", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     PersonId = table.Column<int>(type: "integer", nullable: true),
-                    CartId = table.Column<Guid>(type: "uuid", nullable: true)
+                    CartId = table.Column<Guid>(type: "uuid", nullable: true),
+                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
                 {
