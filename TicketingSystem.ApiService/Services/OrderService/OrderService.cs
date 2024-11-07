@@ -1,10 +1,12 @@
-﻿using TicketingSystem.ApiService.Cache;
+﻿using RabbitMQ.Client;
+using TicketingSystem.ApiService.Cache;
 using TicketingSystem.ApiService.Repositories.CartRepository;
 using TicketingSystem.ApiService.Repositories.PaymentRepository;
 using TicketingSystem.ApiService.Repositories.PriceCategoryRepository;
 using TicketingSystem.ApiService.Repositories.SeatRepository;
 using TicketingSystem.ApiService.Repositories.TickerRepository;
 using TicketingSystem.ApiService.Repositories.UnitOfWork;
+using TicketingSystem.ApiService.Services.RabbitChannel;
 using TicketingSystem.Common.Model.Database.Entities;
 using TicketingSystem.Common.Model.Database.Enums;
 using TicketingSystem.Common.Model.DTOs.Output;
@@ -22,6 +24,7 @@ namespace TicketingSystem.ApiService.Services.OrderService
         private readonly IRedisCacheService _cache;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<OrderService> _logger;
+        private readonly IRabbitChannel _rabbitChannel;
 
         public OrderService(ICartRepository cartRepository,
             IPriceCategoryRepository priceCategoryRepository,
@@ -30,7 +33,8 @@ namespace TicketingSystem.ApiService.Services.OrderService
             IRedisCacheService cache,
             ISeatRepository seatRepository,
             IUnitOfWork unitOfWork,
-            ILogger<OrderService> logger)
+            ILogger<OrderService> logger,
+            IRabbitChannel rabbitChannel)
         {
             _cartRepository = cartRepository;
             _priceCategoryRepository = priceCategoryRepository;
@@ -40,6 +44,7 @@ namespace TicketingSystem.ApiService.Services.OrderService
             _seatRepository = seatRepository;
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _rabbitChannel = rabbitChannel;
         }
 
         public async Task<List<TicketDto>> GetTicketsInCartAsync(Guid cartId)
@@ -55,7 +60,10 @@ namespace TicketingSystem.ApiService.Services.OrderService
                 async () => await AddTicketToCartPlainAsync(cartId, eventId, seatId), System.Data.IsolationLevel.RepeatableRead);
             var errorMsg = exceptionMsg ?? result.ErrorMsg;
             if (errorMsg == null)
+            {
                 _logger.LogInformation("Ticket added to the cart {cartId} successfully", cartId);
+                _rabbitChannel.Publish($"Ticket added to the cart {cartId} successfully");
+            }
             else
                 _logger.LogWarning("Error while adding the ticket to the cart {cartId}. Message: {errorMsg}", cartId, errorMsg);
             return (result.Dto, errorMsg);

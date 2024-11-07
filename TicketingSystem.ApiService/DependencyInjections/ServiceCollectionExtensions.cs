@@ -12,6 +12,7 @@ using TicketingSystem.ApiService.Services.VenueService;
 using TicketingSystem.ApiService.Services.PaymentService;
 using TicketingSystem.ApiService.Services.OrderService;
 using TicketingSystem.ApiService.Repositories.UnitOfWork;
+using TicketingSystem.ApiService.Services.RabbitChannel;
 
 namespace TicketingSystem.ApiService.DependencyInjections
 {
@@ -34,6 +35,8 @@ namespace TicketingSystem.ApiService.DependencyInjections
             services.AddScoped<IVenueService, VenueService>();
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<IOrderService, OrderService>();
+
+            services.AddSingleton<IRabbitChannel, RabbitChannel>();
         }
     }
 }

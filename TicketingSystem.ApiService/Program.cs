@@ -7,6 +7,7 @@ using TicketingSystem.Redis;
 var builder = WebApplication.CreateBuilder(args);
 builder.AddNpgsqlDbContext<TicketingDbContext>("TicketingDB");
 builder.AddRedisOutputCache("cache");
+builder.AddRabbitMQClient("messaging");
 
 // Add service defaults & Aspire components.
 builder.AddServiceDefaults();
