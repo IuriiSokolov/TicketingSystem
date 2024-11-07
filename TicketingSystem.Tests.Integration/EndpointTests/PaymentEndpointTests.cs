@@ -2,17 +2,20 @@
 using Microsoft.Extensions.DependencyInjection;
 using TicketingSystem.Common.Context;
 using TicketingSystem.Common.Model.Database.Entities;
+using TicketingSystem.Tests.Integration.Helpers;
+using Xunit.Extensions.AssemblyFixture;
 
 namespace TicketingSystem.Tests.Integration.EndpointTests
 {
-    public class PaymentEndpointTests : IClassFixture<TicketingWebApplicationFactory>
+    public class PaymentEndpointTests : IAssemblyFixture<TestFixture>
     {
         private readonly HttpClient _client;
         private readonly TicketingDbContext _context;
 
-        public PaymentEndpointTests(TicketingWebApplicationFactory applicationFactory)
+        public PaymentEndpointTests(TestFixture fixture)
         {
-            _client = applicationFactory.CreateClient();
+            _client = fixture.ApiServiceClient;
+            var applicationFactory = fixture.ApiServiceFactory;
             var scope = applicationFactory.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
             _context = scope.ServiceProvider.GetRequiredService<TicketingDbContext>();
         }
@@ -21,7 +24,7 @@ namespace TicketingSystem.Tests.Integration.EndpointTests
         public async Task CompletePaymentTest()
         {
             // Arrange
-            const int ids = 4;
+            var ids = IdGenerator.Next();
             var payment = await Init(ids);
 
             // Act
@@ -35,7 +38,7 @@ namespace TicketingSystem.Tests.Integration.EndpointTests
         public async Task FailPaymentTest()
         {
             // Arrange
-            const int ids = 5;
+            var ids = IdGenerator.Next();
             var payment = await Init(ids);
 
             // Act
