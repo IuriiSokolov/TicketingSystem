@@ -62,7 +62,8 @@ namespace TicketingSystem.ApiService.Services.OrderService
             if (errorMsg == null)
             {
                 _logger.LogInformation("Ticket added to the cart {cartId} successfully", cartId);
-                _rabbitChannel.Publish($"Ticket added to the cart {cartId} successfully");
+                var cart = await _cartRepository.FirstOrDefaultAsync(x => x.CartId == cartId, x => x.Person!);
+                _rabbitChannel.Publish(cart!.Person!.Email, "Ticket added to cart", $"Ticket added to the cart {cartId} successfully");
             }
             else
                 _logger.LogWarning("Error while adding the ticket to the cart {cartId}. Message: {errorMsg}", cartId, errorMsg);
@@ -71,7 +72,7 @@ namespace TicketingSystem.ApiService.Services.OrderService
 
         private async Task<(CartDto? Dto, string? ErrorMsg)> AddTicketToCartPlainAsync(Guid cartId, int eventId, int seatId)
         {
-            var cart = await _cartRepository.FirstOrDefaultWithTicketsAsync(cart => cart.CartId == cartId);
+            var cart = await _cartRepository.FirstOrDefaultAsync(cart => cart.CartId == cartId, x => x.Tickets);
             if (cart == null || cart.CartStatus == CartStatus.Paid)
                 return (null, "Cart not found");
             var ticket = await _ticketRepository.FirstOrDefaultAsync(ticket => ticket.EventId == eventId
@@ -111,7 +112,7 @@ namespace TicketingSystem.ApiService.Services.OrderService
 
         public async Task<PaymentDto?> BookTicketsInCart(Guid cartId)
         {
-            var cart = await _cartRepository.FirstOrDefaultWithTicketsAsync(c => c.CartId == cartId);
+            var cart = await _cartRepository.FirstOrDefaultAsync(c => c.CartId == cartId, x => x.Tickets);
             if (cart == null)
                 return null;
             foreach (var ticket in cart.Tickets)

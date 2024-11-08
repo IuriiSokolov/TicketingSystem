@@ -1,6 +1,8 @@
 ﻿using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
+using System.Text.Json;
+using TicketingSystem.Common.Model.DTOs.Other;
 using TicketingSystem.NotificationService.EmailService;
 
 namespace TicketingSystem.NotificationService
@@ -43,8 +45,9 @@ namespace TicketingSystem.NotificationService
 
         private void ProcessMessageAsync(object? sender, BasicDeliverEventArgs args)
         {
-            string messagetext = Encoding.UTF8.GetString(args.Body.ToArray());
-            _emailService.SendMail(messagetext);
+            var json = Encoding.UTF8.GetString(args.Body.ToArray());
+            var email = JsonSerializer.Deserialize<Email>(json);
+            _emailService.SendMail(email);
             _channel!.BasicAck(args.DeliveryTag, false);
         }
 

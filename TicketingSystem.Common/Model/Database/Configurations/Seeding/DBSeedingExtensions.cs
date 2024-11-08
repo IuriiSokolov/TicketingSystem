@@ -31,7 +31,7 @@ namespace TicketingSystem.Common.Model.Database.Configurations.Seeding
             var freeVipTicket = new Ticket { TicketId = 3, EventId = 1, SeatId = 3, PriceCategoryId = 2, Status = TicketStatus.Free };
             var normalPriceCategory = new PriceCategory { PriceCategoryId = 1, PriceCategoryName = "Normal seat", EventId = 1, PriceUsd = 10 };
             var vipPriceCategory = new PriceCategory { PriceCategoryId = 2, PriceCategoryName = "VIP seat", EventId = 1, PriceUsd = 15 };
-            var person = new Person { PersonId = 1, Name = "Юрий", ContactInfo = "testContact" };
+            var person = new Person { PersonId = 1, Name = "Юрий", ContactInfo = "testContact", Email = "yurijsok@gmail.com" };
             var paidPayment = new Payment { PaymentId = 1, PaymentStatus = PaymentStatus.Paid, PaymentTime = new DateTime(2024, 12, 1).ToUniversalTime(), CartId = paidCartId };
             var paidCart = new Cart { CartId = paidCartId, PersonId = 1, PaymentId = 1, CartStatus = CartStatus.Paid };
             var emptyCart = new Cart { CartId = emptyCartId, PersonId = 1, CartStatus = CartStatus.NotPaid };

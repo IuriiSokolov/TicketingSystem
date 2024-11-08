@@ -51,8 +51,6 @@ namespace TicketingSystem.Tests.Integration.EndpointTests
                 Tickets = [expectedTicketDto]
             };
 
-            var expectedLog = $"SendTransactionalEmailAsync:<h4>Ticket added to the cart {expectedCartDto.CartId} successfully</h4>";
-
             // Act
             var result = await _client.PostAsJsonAsync($"api/orders/carts/{cart.CartId}", inputDto);
 
@@ -60,7 +58,10 @@ namespace TicketingSystem.Tests.Integration.EndpointTests
             var resultCartDto = await result.Content.ReadFromJsonAsync<CartDto>();
             resultCartDto.Should().BeEquivalentTo(expectedCartDto);
             var mailjet = (FakeMailjetClient)_notificationFactory.Services.GetRequiredService<IMailjetClient>();
-            mailjet.Emails.Should().ContainSingle().Which.HTMLPart.Should().Be($"<h4>Ticket added to the cart {expectedCartDto.CartId} successfully</h4>");
+            var email = mailjet.Emails.Should().ContainSingle().Which;
+            email.To.Should().ContainSingle().Which.Email.Should().Be("testEmail@gmail.com");
+            email.Subject.Should().Be("Ticket added to cart");
+            email.HTMLPart.Should().Be($"<h4>Ticket added to the cart {expectedCartDto.CartId} successfully</h4>");
         }
 
         [Fact]
@@ -129,12 +130,12 @@ namespace TicketingSystem.Tests.Integration.EndpointTests
 
         private async Task Init(int ids)
         {
-            var wtf = _context.Persons;
             var person = new Person
             {
                 PersonId = ids,
                 Name = "TestPerson",
-                ContactInfo = ""
+                ContactInfo = "",
+                Email = "testEmail@gmail.com"
             };
             var priceCategory = new PriceCategory
             {

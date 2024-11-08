@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TicketingSystem.Common\TicketingSystem.Common.csproj" />
     <ProjectReference Include="..\TicketingSystem.ServiceDefaults\TicketingSystem.ServiceDefaults.csproj" />
   </ItemGroup>
 

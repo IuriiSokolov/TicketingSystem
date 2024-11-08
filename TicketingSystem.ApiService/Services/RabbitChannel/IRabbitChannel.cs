@@ -2,6 +2,6 @@
 {
     public interface IRabbitChannel
     {
-        void Publish(string message);
+        void Publish(string? emailAddress, string subject, string message);
     }
 }

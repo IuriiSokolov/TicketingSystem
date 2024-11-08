@@ -72,7 +72,7 @@ namespace TicketingSystem.Tests.Integration.WebFactories
                 options.UseNpgsql(_dbContainer.GetConnectionString(), sqlOptions =>
                 {
                     sqlOptions.MigrationsAssembly("TicketingSystem.MigrationService");
-                    sqlOptions.ExecutionStrategy(c => new RetryingSqlServerRetryingExecutionStrategy(c));
+                    //sqlOptions.ExecutionStrategy(c => new RetryingSqlServerRetryingExecutionStrategy(c));
                 });
             }, ServiceLifetime.Singleton);
         }

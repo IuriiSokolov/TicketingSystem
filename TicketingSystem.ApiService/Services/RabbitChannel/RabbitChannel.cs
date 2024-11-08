@@ -1,5 +1,8 @@
-﻿using RabbitMQ.Client;
+﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using RabbitMQ.Client;
 using System.Text;
+using System.Text.Json;
+using TicketingSystem.Common.Model.DTOs.Other;
 
 namespace TicketingSystem.ApiService.Services.RabbitChannel
 {
@@ -21,9 +24,12 @@ namespace TicketingSystem.ApiService.Services.RabbitChannel
             _channel.BasicQos(0, 1, false);
         }
 
-        public void Publish(string message)
+        public void Publish(string? emailAddress, string subject, string message)
         {
-            var body = Encoding.UTF8.GetBytes(message);
+            if (emailAddress is null)
+                return;
+            var email = new Email(emailAddress, subject, message);
+            var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(email));
             _channel.BasicPublish(Exchange, RoutingKey, null, body);
         }
     }
