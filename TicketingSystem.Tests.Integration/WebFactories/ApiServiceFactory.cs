@@ -12,6 +12,8 @@ using TicketingSystem.Common.Context;
 using TicketingSystem.MigrationService;
 using TicketingSystem.Tests.Integration.Helpers;
 using DotNet.Testcontainers.Containers;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace TicketingSystem.Tests.Integration.WebFactories
 {
@@ -30,6 +32,18 @@ namespace TicketingSystem.Tests.Integration.WebFactories
 
         private readonly RabbitMqContainer _rabbitMqContainer = RabbitMqInstance.Instance;
 
+        protected override IHost CreateHost(IHostBuilder builder)
+        {
+            builder.ConfigureAppConfiguration(x =>
+            {
+                x.AddInMemoryCollection(
+                    [
+                        new ("ConnectionStrings:messaging", _rabbitMqContainer.GetConnectionString())
+                    ]);
+            });
+
+            return base.CreateHost(builder);
+        }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
@@ -38,7 +52,6 @@ namespace TicketingSystem.Tests.Integration.WebFactories
             {
                 ConfigurePostgres(services);
                 ConfigureRedis(services);
-                ConfigureRabbitMq(services);
             });
         }
 
@@ -72,7 +85,7 @@ namespace TicketingSystem.Tests.Integration.WebFactories
                 options.UseNpgsql(_dbContainer.GetConnectionString(), sqlOptions =>
                 {
                     sqlOptions.MigrationsAssembly("TicketingSystem.MigrationService");
-                    //sqlOptions.ExecutionStrategy(c => new RetryingSqlServerRetryingExecutionStrategy(c));
+                    sqlOptions.ExecutionStrategy(c => new RetryingSqlServerRetryingExecutionStrategy(c));
                 });
             }, ServiceLifetime.Singleton);
         }
@@ -83,18 +96,6 @@ namespace TicketingSystem.Tests.Integration.WebFactories
             if (descriptor is not null)
                 services.Remove(descriptor);
             services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(_redisContainer.GetConnectionString()));
-        }
-
-        private void ConfigureRabbitMq(IServiceCollection services)
-        {
-            var descriptor = services.SingleOrDefault(s => s.ServiceType == typeof(IConnection));
-            if (descriptor is not null)
-                services.Remove(descriptor);
-            var factory = new ConnectionFactory()
-            {
-                Uri = new(_rabbitMqContainer.GetConnectionString())
-            };
-            services.AddSingleton(sp => factory.CreateConnection());
         }
     }
 }

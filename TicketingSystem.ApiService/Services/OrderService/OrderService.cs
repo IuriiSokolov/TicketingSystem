@@ -1,4 +1,4 @@
-﻿using RabbitMQ.Client;
+﻿using MassTransit;
 using TicketingSystem.ApiService.Cache;
 using TicketingSystem.ApiService.Repositories.CartRepository;
 using TicketingSystem.ApiService.Repositories.PaymentRepository;
@@ -6,9 +6,9 @@ using TicketingSystem.ApiService.Repositories.PriceCategoryRepository;
 using TicketingSystem.ApiService.Repositories.SeatRepository;
 using TicketingSystem.ApiService.Repositories.TickerRepository;
 using TicketingSystem.ApiService.Repositories.UnitOfWork;
-using TicketingSystem.ApiService.Services.RabbitChannel;
 using TicketingSystem.Common.Model.Database.Entities;
 using TicketingSystem.Common.Model.Database.Enums;
+using TicketingSystem.Common.Model.DTOs.Other;
 using TicketingSystem.Common.Model.DTOs.Output;
 using TicketingSystem.Redis;
 
@@ -24,7 +24,7 @@ namespace TicketingSystem.ApiService.Services.OrderService
         private readonly IRedisCacheService _cache;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<OrderService> _logger;
-        private readonly IRabbitChannel _rabbitChannel;
+        private readonly IBus _bus;
 
         public OrderService(ICartRepository cartRepository,
             IPriceCategoryRepository priceCategoryRepository,
@@ -34,7 +34,7 @@ namespace TicketingSystem.ApiService.Services.OrderService
             ISeatRepository seatRepository,
             IUnitOfWork unitOfWork,
             ILogger<OrderService> logger,
-            IRabbitChannel rabbitChannel)
+            IBus bus)
         {
             _cartRepository = cartRepository;
             _priceCategoryRepository = priceCategoryRepository;
@@ -44,7 +44,7 @@ namespace TicketingSystem.ApiService.Services.OrderService
             _seatRepository = seatRepository;
             _unitOfWork = unitOfWork;
             _logger = logger;
-            _rabbitChannel = rabbitChannel;
+            _bus = bus;
         }
 
         public async Task<List<TicketDto>> GetTicketsInCartAsync(Guid cartId)
@@ -56,32 +56,36 @@ namespace TicketingSystem.ApiService.Services.OrderService
 
         public async Task<(CartDto? Dto, string? ErrorMsg)> AddTicketToCartAsync(Guid cartId, int eventId, int seatId)
         {
-            var (result, exceptionMsg) = await _unitOfWork.DoInTransaction<(CartDto? Dto, string? ErrorMsg)>(
+            var (result, exceptionMsg) = await _unitOfWork.DoInTransaction<(CartDto? Dto, string? emailAddress, string? ErrorMsg)>(
                 async () => await AddTicketToCartPlainAsync(cartId, eventId, seatId), System.Data.IsolationLevel.RepeatableRead);
             var errorMsg = exceptionMsg ?? result.ErrorMsg;
             if (errorMsg == null)
             {
                 _logger.LogInformation("Ticket added to the cart {cartId} successfully", cartId);
-                var cart = await _cartRepository.FirstOrDefaultAsync(x => x.CartId == cartId, x => x.Person!);
-                _rabbitChannel.Publish(cart!.Person!.Email, "Ticket added to cart", $"Ticket added to the cart {cartId} successfully");
+                var emailAddress = result.emailAddress;
+                if (emailAddress is not null)
+                {
+                    var email = new Email(emailAddress, "Ticket added to cart", $"Ticket added to the cart {cartId} successfully");
+                    await _bus.Publish(email);
+                }
             }
             else
                 _logger.LogWarning("Error while adding the ticket to the cart {cartId}. Message: {errorMsg}", cartId, errorMsg);
             return (result.Dto, errorMsg);
         }
 
-        private async Task<(CartDto? Dto, string? ErrorMsg)> AddTicketToCartPlainAsync(Guid cartId, int eventId, int seatId)
+        private async Task<(CartDto? Dto, string? emailAddress, string? ErrorMsg)> AddTicketToCartPlainAsync(Guid cartId, int eventId, int seatId)
         {
-            var cart = await _cartRepository.FirstOrDefaultAsync(cart => cart.CartId == cartId, x => x.Tickets);
+            var cart = await _cartRepository.FirstOrDefaultAsync(cart => cart.CartId == cartId, x => x.Tickets, y => y.Person!);
             if (cart == null || cart.CartStatus == CartStatus.Paid)
-                return (null, "Cart not found");
+                return (null, null, "Cart not found");
             var ticket = await _ticketRepository.FirstOrDefaultAsync(ticket => ticket.EventId == eventId
                 && ticket.SeatId == seatId
                 && ticket.Status == TicketStatus.Free
                 && ticket.CartId == null,
                 x => x.Seat!);
             if (ticket == null)
-                return (null, "Ticket not found");
+                return (null, null, "Ticket not found");
             ticket.CartId = cartId;
             await _ticketRepository.UpdateAsync(ticket);
 
@@ -90,7 +94,7 @@ namespace TicketingSystem.ApiService.Services.OrderService
             var categories = await _priceCategoryRepository.GetWhereAsync(pc => pc.EventId == eventId);
             var totalPriceUsd = cart.Tickets.Sum(ticket => categories.Single(pc => pc.PriceCategoryId == ticket.PriceCategoryId).PriceUsd);
             var dto = new CartDto(cart, totalPriceUsd);
-            return (dto, null);
+            return (dto, cart.Person!.Email, null);
         }
 
         public async Task<string?> RemoveTicketFromCartAsync(Guid cartId, int eventId, int seatId)

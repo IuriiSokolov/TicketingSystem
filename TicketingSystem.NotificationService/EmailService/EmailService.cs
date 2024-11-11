@@ -1,5 +1,4 @@
 ﻿using Mailjet.Client;
-using Mailjet.Client.Resources;
 using Mailjet.Client.TransactionalEmails;
 using TicketingSystem.Common.Model.DTOs.Other;
 
@@ -16,11 +15,6 @@ namespace TicketingSystem.NotificationService.EmailService
 
         public async Task SendMail(Email email)
         {
-            MailjetRequest request = new MailjetRequest
-            {
-                Resource = Send.Resource
-            };
-
             var transactionalEmail = new TransactionalEmailBuilder()
                    .WithFrom(new SendContact("yurijsok@gmail.com"))
                    .WithSubject(email.Subject)

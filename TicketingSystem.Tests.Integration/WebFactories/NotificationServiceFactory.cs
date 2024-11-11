@@ -3,8 +3,9 @@ using Mailjet.Client;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using RabbitMQ.Client;
+using Microsoft.Extensions.Hosting;
 using Testcontainers.RabbitMq;
 using TicketingSystem.Tests.Integration.Helpers;
 
@@ -14,12 +15,24 @@ namespace TicketingSystem.Tests.Integration.WebFactories
     {
         private readonly RabbitMqContainer _rabbitMqContainer = RabbitMqInstance.Instance;
 
+        protected override IHost CreateHost(IHostBuilder builder)
+        {
+            builder.ConfigureAppConfiguration(x =>
+            {
+                x.AddInMemoryCollection(
+                    [
+                        new ("ConnectionStrings:messaging", _rabbitMqContainer.GetConnectionString())
+                    ]);
+            });
+
+            return base.CreateHost(builder);
+        }
+
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             Environment.SetEnvironmentVariable("IntegrationTests", "true");
             builder.ConfigureTestServices(services =>
             {
-                ConfigureRabbitMq(services);
                 ConfigureMailJet(services);
             });
         }
@@ -34,18 +47,6 @@ namespace TicketingSystem.Tests.Integration.WebFactories
         {
             if (_rabbitMqContainer.State == TestcontainersStates.Running)
                 await _rabbitMqContainer.DisposeAsync();
-        }
-
-        private void ConfigureRabbitMq(IServiceCollection services)
-        {
-            var descriptor = services.SingleOrDefault(s => s.ServiceType == typeof(IConnection));
-            if (descriptor is not null)
-                services.Remove(descriptor);
-            var factory = new ConnectionFactory()
-            {
-                Uri = new(_rabbitMqContainer.GetConnectionString())
-            };
-            services.AddSingleton(sp => factory.CreateConnection());
         }
 
         private void ConfigureMailJet(IServiceCollection services)

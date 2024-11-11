@@ -26,15 +26,7 @@ namespace TicketingSystem.ApiService.Repositories.RepositoryBase
 
         public async Task<List<TEntity>> GetAllAsync()
         {
-            try
-            {
-                return await Context.Set<TEntity>().ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-                return null;
-            }
+            return await Context.Set<TEntity>().ToListAsync();
         }
 
         public async Task<TEntity> UpdateAsync(TEntity entity)

@@ -1,12 +1,21 @@
 using Mailjet.Client;
-using TicketingSystem.NotificationService;
+using MassTransit;
 using TicketingSystem.NotificationService.EmailService;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.Services.AddMassTransit(cfg =>
+{
+    cfg.SetKebabCaseEndpointNameFormatter();
+    cfg.AddConsumers(typeof(Program).Assembly);
+    cfg.UsingRabbitMq((context, config) =>
+    {
+        config.Host(builder.Configuration.GetConnectionString("messaging"));
+        config.ConfigureEndpoints(context);
+    });
+});
 builder.Services.AddSingleton<IEmailService, EmailService>();
-builder.Services.AddHostedService<NotificationHandler>();
 
 builder.Services.AddHttpClient<IMailjetClient, MailjetClient>(client =>
 {
@@ -16,8 +25,6 @@ builder.Services.AddHttpClient<IMailjetClient, MailjetClient>(client =>
     client.UseBasicAuthentication(apiKey, secretKey);
 })
 .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
-
-builder.AddRabbitMQClient("messaging");
 
 // Add services to the container.
 
