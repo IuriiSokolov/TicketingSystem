@@ -62,12 +62,6 @@ namespace TicketingSystem.ApiService.Services.OrderService
             if (errorMsg == null)
             {
                 _logger.LogInformation("Ticket added to the cart {cartId} successfully", cartId);
-                var emailAddress = result.emailAddress;
-                if (emailAddress is not null)
-                {
-                    var email = new Email(emailAddress, "Ticket added to cart", $"Ticket added to the cart {cartId} successfully");
-                    await _bus.Publish(email);
-                }
             }
             else
                 _logger.LogWarning("Error while adding the ticket to the cart {cartId}. Message: {errorMsg}", cartId, errorMsg);
@@ -87,9 +81,17 @@ namespace TicketingSystem.ApiService.Services.OrderService
             if (ticket == null)
                 return (null, null, "Ticket not found");
             ticket.CartId = cartId;
-            await _ticketRepository.UpdateAsync(ticket);
+            _ticketRepository.Update(ticket);
 
             await _cache.DeleteAsync(CacheKeys.GetSeatsOfSectionOfEvent(eventId, ticket.Seat!.SectionId!.Value));
+
+            var emailAddress = cart.Person!.Email;
+            if (emailAddress is not null)
+            {
+                var email = new Email(emailAddress, "Ticket added to cart", $"Ticket added to the cart {cartId} successfully");
+                await _bus.Publish(email);
+            }
+            await _unitOfWork.SaveChangesAsync();
 
             var categories = await _priceCategoryRepository.GetWhereAsync(pc => pc.EventId == eventId);
             var totalPriceUsd = cart.Tickets.Sum(ticket => categories.Single(pc => pc.PriceCategoryId == ticket.PriceCategoryId).PriceUsd);
@@ -110,7 +112,8 @@ namespace TicketingSystem.ApiService.Services.OrderService
                 return "Ticket not found";
             ticket.CartId = null;
             ticket.Status = TicketStatus.Free;
-            await _ticketRepository.UpdateAsync(ticket);
+            _ticketRepository.Update(ticket);
+            await _unitOfWork.SaveChangesAsync();
             return null;
         }
 
@@ -122,9 +125,10 @@ namespace TicketingSystem.ApiService.Services.OrderService
             foreach (var ticket in cart.Tickets)
             {
                 ticket.Status = TicketStatus.Booked;
-                await _ticketRepository.UpdateAsync(ticket);
+                _ticketRepository.Update(ticket);
             }
-            var payment = await _paymentRepository.AddAsync(new Payment { PaymentStatus = PaymentStatus.Pending, CartId = cartId, Cart = cart });
+            var payment = _paymentRepository.Add(new Payment { PaymentStatus = PaymentStatus.Pending, CartId = cartId, Cart = cart });
+            await _unitOfWork.SaveChangesAsync();
             return new PaymentDto(payment);
         }
     }

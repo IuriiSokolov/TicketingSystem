@@ -7,15 +7,15 @@ using TicketingSystem.Common.Context;
 using TicketingSystem.Common.Migrations;
 
 var builder = Host.CreateApplicationBuilder(args);
-builder.Services.AddHostedService<MigrationApiInitializer<TicketingDbContext>>();
+builder.Services.AddHostedService<MigrationApiInitializer<NotificationDbContext>>();
 
 builder.AddServiceDefaults();
 
 builder.Services.AddOpenTelemetry()
-    .WithTracing(tracing => tracing.AddSource(MigrationApiInitializer<TicketingDbContext>.ActivitySourceName));
+    .WithTracing(tracing => tracing.AddSource(MigrationApiInitializer<NotificationDbContext>.ActivitySourceName));
 
-builder.Services.AddDbContextPool<TicketingDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("TicketingDB"), sqlOptions =>
+builder.Services.AddDbContextPool<NotificationDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("NotificationDb"), sqlOptions =>
     {
         sqlOptions.MigrationsAssembly(Assembly.GetExecutingAssembly().FullName);
         // Workaround for https://github.com/dotnet/aspire/issues/1023
@@ -26,4 +26,4 @@ var app = builder.Build();
 
 app.Run();
 
-public interface IMigrationServiceMarker { }
+public interface INotificationMigrationMarker { }

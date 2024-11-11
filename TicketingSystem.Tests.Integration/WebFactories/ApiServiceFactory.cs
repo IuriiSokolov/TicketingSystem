@@ -3,17 +3,16 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using RabbitMQ.Client;
 using StackExchange.Redis;
 using Testcontainers.PostgreSql;
 using Testcontainers.RabbitMq;
 using Testcontainers.Redis;
 using TicketingSystem.Common.Context;
-using TicketingSystem.MigrationService;
 using TicketingSystem.Tests.Integration.Helpers;
 using DotNet.Testcontainers.Containers;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
+using TicketingSystem.Common.Migrations;
 
 namespace TicketingSystem.Tests.Integration.WebFactories
 {
@@ -84,7 +83,7 @@ namespace TicketingSystem.Tests.Integration.WebFactories
             {
                 options.UseNpgsql(_dbContainer.GetConnectionString(), sqlOptions =>
                 {
-                    sqlOptions.MigrationsAssembly("TicketingSystem.MigrationService");
+                    sqlOptions.MigrationsAssembly(typeof(IMigrationServiceMarker).Assembly.FullName);
                     sqlOptions.ExecutionStrategy(c => new RetryingSqlServerRetryingExecutionStrategy(c));
                 });
             }, ServiceLifetime.Singleton);

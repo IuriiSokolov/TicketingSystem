@@ -1,5 +1,6 @@
 using Mailjet.Client;
 using MassTransit;
+using TicketingSystem.Common.Context;
 using TicketingSystem.NotificationService.EmailService;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.Services.AddMassTransit(cfg =>
 {
+    cfg.AddEntityFrameworkOutbox<NotificationDbContext>(config =>
+    {
+        config.DuplicateDetectionWindow = TimeSpan.FromSeconds(30);
+        config.UsePostgres().UseBusOutbox();
+    });
     cfg.SetKebabCaseEndpointNameFormatter();
     cfg.AddConsumers(typeof(Program).Assembly);
     cfg.UsingRabbitMq((context, config) =>
@@ -15,6 +21,7 @@ builder.Services.AddMassTransit(cfg =>
         config.ConfigureEndpoints(context);
     });
 });
+builder.AddNpgsqlDbContext<NotificationDbContext>("NotificationDb");
 builder.Services.AddSingleton<IEmailService, EmailService>();
 
 builder.Services.AddHttpClient<IMailjetClient, MailjetClient>(client =>

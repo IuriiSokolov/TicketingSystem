@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using TicketingSystem.Common.Model.Database.Configurations;
 using TicketingSystem.Common.Model.Database.Configurations.Seeding;
 using TicketingSystem.Common.Model.Database.Entities;
 using TicketingSystem.Common.Model.Database.Entities.EnumEntities;
+using Event = TicketingSystem.Common.Model.Database.Entities.Event;
 
 namespace TicketingSystem.Common.Context
 {
@@ -15,6 +17,10 @@ namespace TicketingSystem.Common.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.AddInboxStateEntity();
+            modelBuilder.AddOutboxStateEntity();
+            modelBuilder.AddOutboxMessageEntity();
 
             modelBuilder.ApplyConfiguration(new VenuesEntityConfiguration());
             modelBuilder.ApplyConfiguration(new SectionsEntityConfiguration());

@@ -6,5 +6,6 @@ namespace TicketingSystem.ApiService.Repositories.UnitOfWork
     {
         IDbTransaction BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted);
         Task<(TOutput Result, string? ExceptionMsg)> DoInTransaction<TOutput>(Func<Task<TOutput>> task, IsolationLevel isolationLevel = IsolationLevel.ReadCommitted);
+        Task SaveChangesAsync();
     }
 }

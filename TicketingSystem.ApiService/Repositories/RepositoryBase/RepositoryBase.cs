@@ -12,10 +12,9 @@ namespace TicketingSystem.ApiService.Repositories.RepositoryBase
             Context = context;
         }
 
-        public async Task<TEntity> AddAsync(TEntity entity)
+        public TEntity Add(TEntity entity)
         {
-            await Context.Set<TEntity>().AddAsync(entity);
-            await Context.SaveChangesAsync();
+            Context.Set<TEntity>().Add(entity);
             return entity;
         }
 
@@ -29,10 +28,9 @@ namespace TicketingSystem.ApiService.Repositories.RepositoryBase
             return await Context.Set<TEntity>().ToListAsync();
         }
 
-        public async Task<TEntity> UpdateAsync(TEntity entity)
+        public TEntity Update(TEntity entity)
         {
             Context.Set<TEntity>().Update(entity);
-            await Context.SaveChangesAsync();
             return entity;
         }
 
@@ -45,7 +43,6 @@ namespace TicketingSystem.ApiService.Repositories.RepositoryBase
             }
 
             Context.Set<TEntity>().Remove(entity);
-            await Context.SaveChangesAsync();
             return true;
         }
     }

@@ -14,6 +14,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddRedisCacheService();
 builder.Services.AddMassTransit(cfg =>
 {
+    cfg.AddEntityFrameworkOutbox<TicketingDbContext>(config =>
+    {
+        config.UsePostgres().UseBusOutbox();
+    });
     cfg.SetKebabCaseEndpointNameFormatter();
     cfg.UsingRabbitMq((context, config) =>
     {

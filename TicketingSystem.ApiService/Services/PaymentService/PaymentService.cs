@@ -1,5 +1,6 @@
 ﻿using TicketingSystem.ApiService.Repositories.PaymentRepository;
 using TicketingSystem.ApiService.Repositories.TickerRepository;
+using TicketingSystem.ApiService.Repositories.UnitOfWork;
 using TicketingSystem.Common.Model.Database.Enums;
 
 namespace TicketingSystem.ApiService.Services.PaymentService
@@ -8,10 +9,12 @@ namespace TicketingSystem.ApiService.Services.PaymentService
     {
         private readonly IPaymentRepository _paymentRepository;
         private readonly ITicketRepository _ticketRepository;
-        public PaymentService(IPaymentRepository paymentRepository, ITicketRepository ticketRepository)
+        private readonly IUnitOfWork _unitOfWork;
+        public PaymentService(IPaymentRepository paymentRepository, ITicketRepository ticketRepository, IUnitOfWork unitOfWork)
         {
             _paymentRepository = paymentRepository;
             _ticketRepository = ticketRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<PaymentStatus?> GetStatusByIdAsync(int paymentId)
@@ -31,13 +34,14 @@ namespace TicketingSystem.ApiService.Services.PaymentService
             payment.PaymentStatus = PaymentStatus.Paid;
             payment.PaymentTime = DateTime.UtcNow;
             payment.Cart!.CartStatus = CartStatus.Paid;
-            await _paymentRepository.UpdateAsync(payment);
+            _paymentRepository.Update(payment);
             foreach (var ticket in payment.Cart.Tickets)
             {
                 ticket.Status = TicketStatus.Purchased;
                 ticket.PersonId = payment.Cart.PersonId;
-                await _ticketRepository.UpdateAsync(ticket);
+                _ticketRepository.Update(ticket);
             }
+            await _unitOfWork.SaveChangesAsync();
             return true;
         }
 
@@ -50,12 +54,13 @@ namespace TicketingSystem.ApiService.Services.PaymentService
                 return false;
 
             payment.PaymentStatus = PaymentStatus.Failed;
-            await _paymentRepository.UpdateAsync(payment);
+            _paymentRepository.Update(payment);
             foreach (var ticket in payment.Cart!.Tickets)
             {
                 ticket.Status = TicketStatus.Free;
-                await _ticketRepository.UpdateAsync(ticket);
+                _ticketRepository.Update(ticket);
             }
+            await _unitOfWork.SaveChangesAsync();
             return true;
         }
     }
