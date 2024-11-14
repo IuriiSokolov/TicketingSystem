@@ -26,11 +26,14 @@ namespace TicketingSystem.ApiService.Repositories.CartRepository
             return true;
         }
 
-        public async Task<Cart?> FirstOrDefaultWithTicketsAsync(Expression<Func<Cart, bool>> predicate)
+        public async Task<Cart?> FirstOrDefaultAsync(Expression<Func<Cart, bool>> predicate, params Expression<Func<Cart, object>>[] includes)
         {
-            return await Context.Carts
-                .Include(x => x.Tickets)
-                .FirstOrDefaultAsync(predicate);
+            IQueryable<Cart> queriable = Context.Carts;
+            for (int i = 0; i < includes.Length; i++)
+            {
+                queriable = queriable.Include(includes[i]);
+            }
+            return await queriable.FirstOrDefaultAsync(predicate);
         }
     }
 }

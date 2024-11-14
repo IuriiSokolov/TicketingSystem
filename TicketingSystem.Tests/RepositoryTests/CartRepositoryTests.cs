@@ -46,7 +46,7 @@ namespace TicketingSystem.Tests.RepositoryTests
             _mockContext.Setup(x => x.Carts).ReturnsDbSet(carts);
 
             // Act
-            var result = await _cartRepository.FirstOrDefaultWithTicketsAsync(x => true);
+            var result = await _cartRepository.FirstOrDefaultAsync(x => true, x => x.Tickets);
 
             // Assert
             result.Should().Be(cart);

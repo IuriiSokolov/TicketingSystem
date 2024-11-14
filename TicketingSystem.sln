@@ -14,9 +14,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicketingSystem.Common", "T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicketingSystem.MigrationService", "TicketingSystem.MigrationService\TicketingSystem.MigrationService.csproj", "{009C1719-363C-458F-98F6-B96C4882016F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketingSystem.Tests.Integration", "TicketingSystem.Tests.Integration\TicketingSystem.Tests.Integration.csproj", "{901C2C15-5D0C-4BF5-959D-C75A0B0F499C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicketingSystem.Tests.Integration", "TicketingSystem.Tests.Integration\TicketingSystem.Tests.Integration.csproj", "{901C2C15-5D0C-4BF5-959D-C75A0B0F499C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketingSystem.Redis", "TicketingSystem.Redis\TicketingSystem.Redis.csproj", "{43B781A8-F7FC-45DD-BC06-58AA590058F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicketingSystem.Redis", "TicketingSystem.Redis\TicketingSystem.Redis.csproj", "{43B781A8-F7FC-45DD-BC06-58AA590058F0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicketingSystem.NotificationService", "TicketingSystem.NotificationService\TicketingSystem.NotificationService.csproj", "{354BAB29-8F3F-43B2-8808-39AEED727125}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicketingSystem.NotificationMigration", "TicketingSystem.NotificationMigration\TicketingSystem.NotificationMigration.csproj", "{70931F38-6F82-4EA9-9C68-6DFF6EE9A77D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,6 +60,14 @@ Global
 		{43B781A8-F7FC-45DD-BC06-58AA590058F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43B781A8-F7FC-45DD-BC06-58AA590058F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43B781A8-F7FC-45DD-BC06-58AA590058F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{354BAB29-8F3F-43B2-8808-39AEED727125}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{354BAB29-8F3F-43B2-8808-39AEED727125}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{354BAB29-8F3F-43B2-8808-39AEED727125}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{354BAB29-8F3F-43B2-8808-39AEED727125}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70931F38-6F82-4EA9-9C68-6DFF6EE9A77D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70931F38-6F82-4EA9-9C68-6DFF6EE9A77D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70931F38-6F82-4EA9-9C68-6DFF6EE9A77D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70931F38-6F82-4EA9-9C68-6DFF6EE9A77D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

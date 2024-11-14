@@ -10,14 +10,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TicketingSystem.NotificationMigration\TicketingSystem.NotificationMigration.csproj" />
     <ProjectReference Include="..\TicketingSystem.ApiService\TicketingSystem.ApiService.csproj" />
     <ProjectReference Include="..\TicketingSystem.MigrationService\TicketingSystem.MigrationService.csproj" />
+    <ProjectReference Include="..\TicketingSystem.NotificationService\TicketingSystem.NotificationService.csproj" />
     <ProjectReference Include="..\TicketingSystem.Web\TicketingSystem.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" Version="8.1.0" />
     <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="8.2.1" />
+    <PackageReference Include="Aspire.Hosting.RabbitMQ" Version="8.2.2" />
     <PackageReference Include="Aspire.Hosting.Redis" Version="8.1.0" />
   </ItemGroup>
 

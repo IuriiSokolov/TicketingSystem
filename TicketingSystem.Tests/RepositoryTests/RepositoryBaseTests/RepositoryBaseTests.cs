@@ -30,7 +30,7 @@ namespace TicketingSystem.Tests.RepositoryTests.RepositoryBaseTests
         }
 
         [TestMethod]
-        public async Task AddAsyncTest()
+        public void AddTest()
         {
             // Arrange
             var venue = new Venue
@@ -40,12 +40,11 @@ namespace TicketingSystem.Tests.RepositoryTests.RepositoryBaseTests
             };
 
             // Act
-            var result = await _testRepository.AddAsync(venue);
+            var result = _testRepository.Add(venue);
 
             // Assert
             result.Should().Be(venue);
-            _mockSet.Verify(x => x.AddAsync(venue, CancellationToken.None), Times.Once);
-            _mockContext.Verify(x => x.SaveChangesAsync(CancellationToken.None), Times.Once);
+            _mockSet.Verify(x => x.Add(venue), Times.Once);
         }
 
         [TestMethod]
@@ -99,7 +98,7 @@ namespace TicketingSystem.Tests.RepositoryTests.RepositoryBaseTests
         }
 
         [TestMethod]
-        public async Task UpdateAsyncTest()
+        public void UpdateTest()
         {
             // Arrange
             var venueOld = new Venue()
@@ -122,11 +121,10 @@ namespace TicketingSystem.Tests.RepositoryTests.RepositoryBaseTests
             _mockContext.Setup(x => x.Set<Venue>()).ReturnsDbSet(venues);
 
             // Act
-            var result = await _testRepository.UpdateAsync(venueNew);
+            var result = _testRepository.Update(venueNew);
 
             // Assert
             result.Should().BeEquivalentTo(venueNew);
-            _mockContext.Verify(x => x.SaveChangesAsync(CancellationToken.None), Times.Once);
         }
 
         [DataTestMethod]
@@ -159,7 +157,6 @@ namespace TicketingSystem.Tests.RepositoryTests.RepositoryBaseTests
             if (venueExists)
             {
                 _mockSet.Verify(x => x.Remove(venue!), Times.Once);
-                _mockContext.Verify(x => x.SaveChangesAsync(CancellationToken.None), Times.Once);
             }
         }
     }

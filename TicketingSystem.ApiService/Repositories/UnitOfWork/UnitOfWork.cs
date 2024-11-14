@@ -34,6 +34,7 @@ namespace TicketingSystem.ApiService.Repositories.UnitOfWork
             try
             {
                 var result = await task();
+                await _dbContext.SaveChangesAsync();
                 transaction.Commit();
                 return (result, null);
             }
@@ -45,5 +46,8 @@ namespace TicketingSystem.ApiService.Repositories.UnitOfWork
                 return (default!, errorMsg);
             }
         }
+
+        public async Task SaveChangesAsync() =>
+            await _dbContext.SaveChangesAsync();
     }
 }

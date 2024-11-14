@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Npgsql;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 
-namespace TicketingSystem.MigrationService;
+namespace TicketingSystem.Common.Migrations;
 
 public class RetryingSqlServerRetryingExecutionStrategy(ExecutionStrategyDependencies dependencies) : NpgsqlRetryingExecutionStrategy(dependencies)
 {
