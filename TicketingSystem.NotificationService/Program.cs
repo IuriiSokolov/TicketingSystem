@@ -2,10 +2,14 @@ using Mailjet.Client;
 using MassTransit;
 using TicketingSystem.Common.Context;
 using TicketingSystem.NotificationService.EmailService;
+using TicketingSystem.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.Services.AddRequestTimeouts();
+builder.AddRedisOutputCache("cache");
+builder.Services.AddRedisCacheService();
 builder.Services.AddMassTransit(cfg =>
 {
     cfg.AddEntityFrameworkOutbox<NotificationDbContext>(config =>
@@ -38,6 +42,9 @@ builder.Services.AddHttpClient<IMailjetClient, MailjetClient>(client =>
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
+app.UseRequestTimeouts();
+app.UseOutputCache();
+
 
 app.Run();
 

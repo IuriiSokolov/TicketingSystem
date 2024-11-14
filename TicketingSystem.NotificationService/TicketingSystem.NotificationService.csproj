@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.2.2" />
+    <PackageReference Include="Aspire.StackExchange.Redis" Version="9.0.0" />
+    <PackageReference Include="Aspire.StackExchange.Redis.OutputCaching" Version="9.0.0" />
     <PackageReference Include="Mailjet.Api" Version="3.0.0" />
     <PackageReference Include="MassTransit.EntityFrameworkCore" Version="8.3.1" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.3.1" />
@@ -15,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TicketingSystem.Common\TicketingSystem.Common.csproj" />
+    <ProjectReference Include="..\TicketingSystem.Redis\TicketingSystem.Redis.csproj" />
     <ProjectReference Include="..\TicketingSystem.ServiceDefaults\TicketingSystem.ServiceDefaults.csproj" />
   </ItemGroup>
 
