@@ -7,5 +7,6 @@ namespace TicketingSystem.ApiService.Repositories.PaymentRepository
     public interface IPaymentRepository : IRepositoryBase<Payment>
     {
         Task<Payment?> FirstOrDefaultWithCartWithTicketsAsync(Expression<Func<Payment, bool>> predicate);
+        Task<List<Payment>> GetWhereWithCartWithTicketsAsync(Expression<Func<Payment, bool>> predicate);
     }
 }

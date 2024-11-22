@@ -159,5 +159,67 @@ namespace TicketingSystem.Tests.RepositoryTests.RepositoryBaseTests
                 _mockSet.Verify(x => x.Remove(venue!), Times.Once);
             }
         }
+
+        [TestMethod]
+        public async Task FirstOrDefaultAsync()
+        {
+            // Arrange
+            var venue = new Venue
+            {
+                Address = "testAddress",
+                Name = "testName",
+                VenueId = 1
+            };
+            var venues = new List<Venue> { venue };
+
+            var @event = new Event
+            {
+                EventId = 1,
+                Date = new DateTime(2024, 1, 1),
+                Name = "testEventName",
+                VenueId = 1
+            };
+            var events = new List<Event> { @event };
+
+            _mockContext.Setup(x => x.Set<Venue>()).ReturnsDbSet(venues);
+            _mockContext.Setup(x => x.Events).ReturnsDbSet(events);
+
+            // Act
+            var result = await _testRepository.FirstOrDefaultAsync(x => true, x => x.Events);
+
+            // Assert
+            result.Should().Be(venue);
+        }
+
+        [TestMethod]
+        public async Task GetWhereAsync()
+        {
+            // Arrange
+            var venue = new Venue
+            {
+                Address = "testAddress",
+                Name = "testName",
+                VenueId = 1
+            };
+            var venues = new List<Venue> { venue };
+
+            var @event = new Event
+            {
+                EventId = 1,
+                Date = new DateTime(2024, 1, 1),
+                Name = "testEventName",
+                VenueId = 1
+            };
+            var events = new List<Event> { @event };
+
+            _mockContext.Setup(x => x.Set<Venue>()).ReturnsDbSet(venues);
+            _mockContext.Setup(x => x.Events).ReturnsDbSet(events);
+
+            // Act
+            var result = await _testRepository.GetWhereAsync(x => true, x => x.Events);
+
+            // Assert
+            result.Should().BeEquivalentTo(venues);
+        }
     }
 }
