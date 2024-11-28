@@ -7,6 +7,7 @@ using TicketingSystem.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddNpgsqlDbContext<TicketingDbContext>("TicketingDB");
+builder.Services.AddRequestTimeouts();
 builder.AddRedisOutputCache("cache");
 builder.AddServiceDefaults();
 builder.Services.AddEndpointsApiExplorer();
@@ -40,6 +41,7 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseSerilogRequestLogging();
+app.UseRequestTimeouts();
 app.UseOutputCache();
 app.UseExceptionHandler();
 if (app.Environment.IsDevelopment())

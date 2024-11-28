@@ -26,6 +26,7 @@ var apiService = builder.AddProject<Projects.TicketingSystem_ApiService>("apiser
 
 var notificationService = builder.AddProject<Projects.TicketingSystem_NotificationService>("notificationservice")
     .WithReference(notificationdb)
+    .WithReference(cache)
     .WithReference(rabbitmq);
 
 builder.AddProject<Projects.TicketingSystem_MigrationService>("migration")
