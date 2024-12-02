@@ -15,5 +15,13 @@ namespace TicketingSystem.ApiService.Repositories.PaymentRepository
                 .ThenInclude(c => c!.Tickets)
                 .FirstOrDefaultAsync(predicate);
         }
+
+        public async Task<List<Payment>> GetWhereWithCartWithTicketsAsync(Expression<Func<Payment, bool>> predicate)
+        {
+            return await Context.Payments
+                .Include(p => p.Cart)
+                .ThenInclude(c => c!.Tickets)
+                .Where(predicate).ToListAsync();
+        }
     }
 }

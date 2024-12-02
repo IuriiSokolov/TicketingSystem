@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using TicketingSystem.Common.Context;
 
 namespace TicketingSystem.ApiService.Repositories.RepositoryBase
@@ -44,6 +45,25 @@ namespace TicketingSystem.ApiService.Repositories.RepositoryBase
 
             Context.Set<TEntity>().Remove(entity);
             return true;
+        }
+
+        public async Task<List<TEntity>> GetWhereAsync(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes)
+        {
+            IQueryable<TEntity> queriable = Context.Set<TEntity>();
+            for (int i = 0; i < includes.Length; i++)
+            {
+                queriable = queriable.Include(includes[i]);
+            }
+            return await queriable.Where(predicate).ToListAsync();
+        }
+        public async Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes)
+        {
+            IQueryable<TEntity> queriable = Context.Set<TEntity>();
+            for (int i = 0; i < includes.Length; i++)
+            {
+                queriable = queriable.Include(includes[i]);
+            }
+            return await queriable.FirstOrDefaultAsync(predicate);
         }
     }
 }

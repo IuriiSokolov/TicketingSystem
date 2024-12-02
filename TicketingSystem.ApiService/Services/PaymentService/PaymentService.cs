@@ -1,6 +1,9 @@
-﻿using TicketingSystem.ApiService.Repositories.PaymentRepository;
+﻿using Microsoft.Extensions.Options;
+using TicketingSystem.ApiService.Options;
+using TicketingSystem.ApiService.Repositories.PaymentRepository;
 using TicketingSystem.ApiService.Repositories.TickerRepository;
 using TicketingSystem.ApiService.Repositories.UnitOfWork;
+using TicketingSystem.Common.Model.Database.Entities;
 using TicketingSystem.Common.Model.Database.Enums;
 
 namespace TicketingSystem.ApiService.Services.PaymentService
@@ -10,11 +13,19 @@ namespace TicketingSystem.ApiService.Services.PaymentService
         private readonly IPaymentRepository _paymentRepository;
         private readonly ITicketRepository _ticketRepository;
         private readonly IUnitOfWork _unitOfWork;
-        public PaymentService(IPaymentRepository paymentRepository, ITicketRepository ticketRepository, IUnitOfWork unitOfWork)
+        private readonly TimeProvider _timeProvider;
+        private readonly TimeSpan PaymentShelfLife;
+        public PaymentService(IPaymentRepository paymentRepository,
+            ITicketRepository ticketRepository,
+            IUnitOfWork unitOfWork,
+            TimeProvider timeProvider,
+            IOptions<PaymentOptions> options)
         {
             _paymentRepository = paymentRepository;
             _ticketRepository = ticketRepository;
             _unitOfWork = unitOfWork;
+            _timeProvider = timeProvider;
+            PaymentShelfLife = options.Value.PaymentShelfLifeMinTime;
         }
 
         public async Task<PaymentStatus?> GetStatusByIdAsync(int paymentId)
@@ -53,15 +64,29 @@ namespace TicketingSystem.ApiService.Services.PaymentService
                 || payment.PaymentStatus != PaymentStatus.Pending)
                 return false;
 
+            FailPayment(payment);
+            await _unitOfWork.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task FailOutdatedPayments()
+        {
+            var payments = await _paymentRepository.GetWhereWithCartWithTicketsAsync(x => _timeProvider.GetUtcNow() - x.CreationTime > PaymentShelfLife
+                && x.PaymentStatus == PaymentStatus.Pending);
+            foreach (var payment in payments)
+            {
+                FailPayment(payment);
+            }
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        private static void FailPayment(Payment payment)
+        {
             payment.PaymentStatus = PaymentStatus.Failed;
-            _paymentRepository.Update(payment);
             foreach (var ticket in payment.Cart!.Tickets)
             {
                 ticket.Status = TicketStatus.Free;
-                _ticketRepository.Update(ticket);
             }
-            await _unitOfWork.SaveChangesAsync();
-            return true;
         }
     }
 }
