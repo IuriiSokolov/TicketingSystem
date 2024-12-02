@@ -36,6 +36,8 @@ namespace TicketingSystem.ApiService.DependencyInjections
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<IOrderService, OrderService>();
 
+            services.AddSingleton(TimeProvider.System);
+
             services.AddHostedService<SeatReleasingService>();
         }
     }

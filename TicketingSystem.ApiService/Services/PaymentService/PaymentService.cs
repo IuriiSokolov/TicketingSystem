@@ -11,14 +11,16 @@ namespace TicketingSystem.ApiService.Services.PaymentService
         private readonly IPaymentRepository _paymentRepository;
         private readonly ITicketRepository _ticketRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly TimeProvider _timeProvider;
         private readonly TimeSpan PaymentShelfLife;
-        public PaymentService(IPaymentRepository paymentRepository, ITicketRepository ticketRepository, IUnitOfWork unitOfWork, IConfiguration configuration)
+        public PaymentService(IPaymentRepository paymentRepository, ITicketRepository ticketRepository, IUnitOfWork unitOfWork, IConfiguration configuration, ITimeProvider timeProvider)
         {
             _paymentRepository = paymentRepository;
             _ticketRepository = ticketRepository;
             _unitOfWork = unitOfWork;
             var paymentShelfLifeMin = Convert.ToInt32(configuration["PaymentShelfLifeMin"]);
             PaymentShelfLife = TimeSpan.FromMinutes(paymentShelfLifeMin);
+            _timeProvider = timeProvider;
         }
 
         public async Task<PaymentStatus?> GetStatusByIdAsync(int paymentId)
@@ -64,7 +66,7 @@ namespace TicketingSystem.ApiService.Services.PaymentService
 
         public async Task FailOutdatedPayments()
         {
-            var payments = await _paymentRepository.GetWhereWithCartWithTicketsAsync(x => DateTime.UtcNow - x.CreationTime > PaymentShelfLife
+            var payments = await _paymentRepository.GetWhereWithCartWithTicketsAsync(x => _timeProvider.GetUtcNow() - x.CreationTime > PaymentShelfLife
                 && x.PaymentStatus == PaymentStatus.Pending);
             foreach (var payment in payments)
             {
