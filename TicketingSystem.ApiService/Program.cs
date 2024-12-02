@@ -28,6 +28,7 @@ builder.Services.AddMassTransit(cfg =>
 
 // Add services to the container.
 builder.Services.AddProblemDetails();
+builder.AddOptions();
 builder.Services.AddRepositories();
 builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
 

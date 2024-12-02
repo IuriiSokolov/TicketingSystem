@@ -13,6 +13,7 @@ using TicketingSystem.ApiService.Services.PaymentService;
 using TicketingSystem.ApiService.Services.OrderService;
 using TicketingSystem.ApiService.Repositories.UnitOfWork;
 using TicketingSystem.ApiService.BackgroundWorkers;
+using TicketingSystem.ApiService.Options;
 
 namespace TicketingSystem.ApiService.DependencyInjections
 {
@@ -39,6 +40,17 @@ namespace TicketingSystem.ApiService.DependencyInjections
             services.AddSingleton(TimeProvider.System);
 
             services.AddHostedService<SeatReleasingService>();
+        }
+
+        public static void AddOptions(this WebApplicationBuilder builder)
+        {
+            builder.AddOption<PaymentOptions>();
+        }
+
+        private static void AddOption<TOption>(this WebApplicationBuilder builder) where TOption : class
+        {
+            var typeName = typeof(TOption).Name;
+            builder.Services.Configure<TOption>(builder.Configuration.GetSection(typeName));
         }
     }
 }

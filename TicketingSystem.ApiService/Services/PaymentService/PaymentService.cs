@@ -1,4 +1,6 @@
-﻿using TicketingSystem.ApiService.Repositories.PaymentRepository;
+﻿using Microsoft.Extensions.Options;
+using TicketingSystem.ApiService.Options;
+using TicketingSystem.ApiService.Repositories.PaymentRepository;
 using TicketingSystem.ApiService.Repositories.TickerRepository;
 using TicketingSystem.ApiService.Repositories.UnitOfWork;
 using TicketingSystem.Common.Model.Database.Entities;
@@ -13,14 +15,17 @@ namespace TicketingSystem.ApiService.Services.PaymentService
         private readonly IUnitOfWork _unitOfWork;
         private readonly TimeProvider _timeProvider;
         private readonly TimeSpan PaymentShelfLife;
-        public PaymentService(IPaymentRepository paymentRepository, ITicketRepository ticketRepository, IUnitOfWork unitOfWork, IConfiguration configuration, ITimeProvider timeProvider)
+        public PaymentService(IPaymentRepository paymentRepository,
+            ITicketRepository ticketRepository,
+            IUnitOfWork unitOfWork,
+            TimeProvider timeProvider,
+            IOptions<PaymentOptions> options)
         {
             _paymentRepository = paymentRepository;
             _ticketRepository = ticketRepository;
             _unitOfWork = unitOfWork;
-            var paymentShelfLifeMin = Convert.ToInt32(configuration["PaymentShelfLifeMin"]);
-            PaymentShelfLife = TimeSpan.FromMinutes(paymentShelfLifeMin);
             _timeProvider = timeProvider;
+            PaymentShelfLife = options.Value.PaymentShelfLifeMinTime;
         }
 
         public async Task<PaymentStatus?> GetStatusByIdAsync(int paymentId)
